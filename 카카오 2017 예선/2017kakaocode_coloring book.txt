@@ -1,0 +1,88 @@
+#include <vector>
+#include <stdlib.h>
+#include <iostream>
+#include <algorithm>
+
+using namespace std;
+
+// 전역 변수를 정의할 경우 함수 내에 초기화 코드를 꼭 작성해주세요.
+vector<int> solution(int m, int n, vector<vector<int>> picture) {
+	vector<int> colors;
+	vector<vector<pair<int, int>>> places;
+
+	for (int i = 0; i < picture.size(); i++)
+	{
+		for (int j = 0; j < picture[i].size(); j++)
+		{
+			//cout<<picture[i][j]<< " "<<i << " "<< j<<endl;
+			if (picture[i][j] == 0)
+			{
+				//cout<<endl;
+				continue;
+			}
+
+			int flag = 0;
+			for (int k = 0; k < places.size(); k++)
+			{
+				//cout<<colors[k]<< " "<< picture[i][j]<<endl;
+				if (picture[i][j] != colors[k])
+					continue;
+
+				for (int a = 0; a < places[k].size(); a++)
+				{
+
+					if ((i == places[k][a].first && abs(j - places[k][a].second) == 1) || (abs(i - places[k][a].first) == 1 && j == places[k][a].second))
+					{
+						pair<int, int> temp = make_pair(i, j);
+						places[k].push_back(temp);
+						flag = 1;
+						//cout<<"flag1"<<endl;
+						//cout<<temp.first<< " "<<temp.second<<endl;
+						break;
+					}
+				}
+				if (flag == 1)
+				{
+					break;
+				}
+			}
+			if (flag == 0)
+			{
+				//cout<<"flag0 "<<endl;
+				colors.push_back(picture[i][j]);
+				pair<int, int> temp = make_pair(i, j);
+				//cout<<temp.first<< " "<<temp.second <<endl;
+				vector<pair<int, int>> temp2;
+				temp2.push_back(temp);
+				places.push_back(temp2);
+			}
+			//cout<<endl;
+		}
+	}
+	//cout<<"asdasdsda"<<endl;
+	//cout<< colors.size()<<endl;
+	//cout<< places.size()<<endl;
+	for (int i = 0; i < places.size(); i++)
+	{
+		//cout<<"length: "<<places[i].size()<<endl;
+		for (int j = 0; j < places[i].size(); j++)
+		{
+			cout << places[i][j].first << " ";
+			cout << places[i][j].second << endl;
+		}
+		//cout<<"---------------"<<endl;
+	}
+	vector<int> sizes;
+	for (int i = 0; i < places.size(); i++)
+	{
+		sizes.push_back(places[i].size());
+	}
+
+	int number_of_area = colors.size();
+	int max_size_of_one_area = *max_element(sizes.begin(), sizes.end());
+
+	vector<int> answer(2);
+	answer[0] = number_of_area;
+	answer[1] = max_size_of_one_area;
+	return answer;
+}
