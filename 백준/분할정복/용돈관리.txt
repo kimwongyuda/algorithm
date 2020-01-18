@@ -1,0 +1,51 @@
+#include <iostream>
+#include <algorithm>
+using namespace std;
+
+int main()
+{
+	int NUM[100000];
+	int N, M;
+	int high = 0;
+	int low = 0;
+	int min_ = 10000;
+	cin >> N >> M;
+
+	for (int i = 0; i < N; i++) {
+
+		cin >> NUM[i];
+		high += NUM[i];
+
+		low = max(NUM[i], low);
+	}
+
+	while (low <= high) {
+
+		int mid = (low + high) / 2; //1200
+		int count = 1;
+		int sum = 0;
+
+		for (int i = 0; i < N; i++) {
+			sum += NUM[i];
+
+			if (sum > mid)
+			{
+				sum = 0;
+				count++;
+			}
+		}
+
+		if (count<=M) {
+			min_ = min(min_,mid);
+			high = mid - 1;
+		}
+
+		else {
+			low = mid + 1;
+		}
+	}
+
+	cout << min_ << endl;
+
+	return 0;
+}
