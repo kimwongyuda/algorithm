@@ -30,13 +30,13 @@ int main()
 
 			if (sum > mid)
 			{
-				sum = 0;
+				sum = NUM[i];
 				count++;
 			}
 		}
 
 		if (count<=M) {
-			min_ = min(min_,mid);
+			min_ = mid;
 			high = mid - 1;
 		}
 
