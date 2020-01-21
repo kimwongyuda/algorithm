@@ -1,0 +1,63 @@
+#include <iostream>
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+int answer = 0;
+
+int square(int N) {
+	if (N == 0)
+		return 1;
+	if (N == 1)
+		return 2;
+	return 2 * square(N - 1);
+}
+
+void solve(int N, int r, int c)
+{
+	if (N == 0)
+		return;
+	int squared_N = square(N);
+	int score = square(2 * N - 2);
+
+	//1사분면
+	int half = squared_N / 2;
+	if (r < half && c < half)
+	{
+		answer += 0 * score;
+		solve(N-1, r, c);
+	}
+
+	//2사분면
+	else if (r < half && c >= half)
+	{
+		answer += 1 * score;
+		solve(N-1, r, c-half);
+	}
+
+	//3사분면
+	else if (r >= half && c < half)
+	{
+		answer += 2 * score;
+		solve(N-1, r - half, c);
+	}
+
+	//4사분면
+	else
+	{
+		answer += 3 * score;
+		solve(N-1, r - half, c-half);
+	}
+}
+
+int main()
+{
+	int N, r, c;
+	scanf("%d %d %d", &N, &r, &c);
+
+	solve(N,r,c);
+
+	printf("%d\n", answer);
+
+	return 0;
+}
