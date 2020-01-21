@@ -1,0 +1,92 @@
+#include <iostream>
+#include <vector>
+#include <string>
+using namespace std;
+
+string num;
+int N;
+
+vector<int> mulN(vector<int> numbers, vector<int> numbers2)
+{
+	vector<int> ret(numbers.size() + numbers2.size() - 1, 0);
+	for (int i = 0; i < numbers.size();i++)
+	{
+		for (int j = 0; j < numbers2.size();j++)
+		{
+			ret[i + j] += numbers[i] * numbers2[j];
+		}
+	}
+
+	return ret;
+}
+
+vector<int> plus_(vector<int> numbers)
+{
+	int size = numbers.size();
+	for (int i = size-1; i >= 0;i--)
+	{
+		if (i == 0)
+		{
+			if (numbers[i] > 10)
+			{
+				numbers.insert(numbers.begin(), 0);
+				numbers[0] += numbers[1] / 10;
+				numbers[1] = numbers[1] % 10;
+			}
+		}
+		else 
+		{
+			numbers[i - 1] += numbers[i] / 10;
+			numbers[i] = numbers[i] % 10;
+		}
+	}
+	return numbers;
+}
+
+int main()
+{
+	cin >> num;
+	scanf_s("%d", &N);
+
+	int point = 0;
+
+	for (int i = 0; i < num.size();i++)
+	{
+		if (num[i] == '.')
+			point = i;
+	}
+
+	point = num.size() - point - 1;
+	int newpoint = 0;
+
+	for (int i = 0; i < N;i++)
+	{
+		newpoint += point;
+	}
+
+	vector<int> numbers;
+	for (int i = 0; i < num.size();i++)
+	{
+		if (num[i] != '.')
+			numbers.push_back(num[i]-'0');
+	}
+
+	vector<int> temp = numbers;
+	for (int i = 0; i < N-1; i++)
+	{
+		temp = mulN(numbers, temp);
+	}
+
+	temp = plus_(temp);
+
+	string answer = "";
+
+	for (int i = 0; i < temp.size();i++)
+	{
+		answer += to_string(temp[i]);
+	}
+	answer.insert(answer.size() - newpoint, ".");
+
+	cout << answer << endl;
+	return 0;
+}
