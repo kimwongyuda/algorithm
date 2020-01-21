@@ -1,0 +1,55 @@
+#include <iostream>
+#include <stdio.h>
+#include <algorithm>
+using namespace std;
+
+
+//endl 쓰면 느리다. -> 한번 호출될때마다 출력버퍼 밀어 초기화됨.
+//아래 3문장 또는 scanf와 printf를 추천한다.
+
+void hanoi(int N, int num1, int num2, int num3)
+{
+	if (N == 1)
+	{
+		//cout << num1 << " " << num3 << endl;
+		printf("%d %d\n", num1, num3);
+		return;
+	}
+	else
+	{
+		hanoi(N-1, num1, num3, num2);
+		//cout << num1 << " " << num3 << endl;
+		printf("%d %d\n", num1, num3);
+		hanoi(N-1, num2, num1, num3);
+		return;
+	}
+}
+
+int count(int N)
+{
+	if (N == 1)
+		return 2;
+
+	return 2 * count(N - 1);
+}
+
+int main()
+{
+	//ios::sync_with_stdio(false);
+	//cin.tie(0);
+	//cout.tie(0);
+
+	int N;
+	//cin >> N;
+	//여기서는 scanf_s 지만, 백준에서는 scanf 쓴다.
+	scanf_s("%d", &N);
+
+	//오래 걸리는 pow 함수
+	//cout << count(N)-1 << endl;
+	printf("%d\n", count(N) - 1);
+
+	if(N<=20)
+		hanoi(N, 1, 2, 3);
+
+	return 0;
+}
