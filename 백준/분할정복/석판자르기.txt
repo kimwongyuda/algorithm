@@ -1,0 +1,106 @@
+#include "pch.h"
+#include <iostream>
+#include <vector>
+#include <string>
+#include <algorithm>
+using namespace std;
+
+int map[20][20];
+int n;
+
+int solve(bool dir, pair<int, int> start, pair<int, int> end) {
+	int ret = 0;
+	int star_count = 0;
+	int bad_count;
+	vector<pair<int, int>> bads;
+
+	//처음에 조사하는 부분
+	for (int i = start.first; i <= end.first; i++)
+	{
+		for (int j = start.second; j <= end.second; j++)
+		{
+			if (map[i][j] == 1)
+				bads.push_back(make_pair(i,j));
+			else if (map[i][j] == 2)
+				star_count++;
+		}
+	}
+	bad_count = bads.size();
+
+	if (star_count == 0 || star_count > 1 && bad_count == 0)
+		return 0;
+	if (star_count == 1 && bad_count == 0)
+		return 1;
+
+	for (int i = 0; i < bad_count; i++)
+	{
+		int cur_x = bads[i].first;
+		int cur_y = bads[i].second;
+
+		if (dir)
+		{
+			if (cur_x - start.first < 1 || end.first - cur_x < 1)
+				continue;
+			//별 있는지 확인.
+			bool isstar = false;
+			for (int j = start.second; j <= end.second; j++)
+			{
+				if (map[cur_x][j] == 2)
+				{
+					isstar = true;
+					break;
+				}
+			}
+			if (isstar)
+				continue;
+			ret+= solve(!dir, start, make_pair(cur_x-1,end.second))*solve(!dir, make_pair(cur_x+1, start.second), end);
+		}
+		else 
+		{
+			if (cur_y - start.second < 1 || end.second - cur_y < 1)
+				continue;
+			//별 있는지 확인
+			bool isstar = false;
+			for (int j = start.first; j <= end.first; j++)
+			{
+				if (map[j][cur_y] == 2)
+				{
+					isstar = true;
+					break;
+				}
+			}
+			if (isstar)
+				continue;
+			ret+= solve(!dir, start, make_pair(end.first, cur_y - 1))*solve(!dir, make_pair(start.first, cur_y+1), end);
+		}
+	}
+
+	return ret;
+}
+
+int main() {
+
+	//입력
+	scanf_s("%d", &n);
+	for (int i = 0; i < n; i++)
+	{
+		for (int j = 0; j < n; j++)
+		{
+			scanf_s("%d", &map[i][j]);
+		}
+	}
+
+	pair<int, int> start = make_pair(0,0);
+	pair<int, int> end = make_pair(n - 1, n - 1);
+
+	//가로, 세로
+	bool dir[2] = { true,false };
+	int answer= solve(dir[0], start, end) + solve(dir[1], start, end);
+	if (answer == 0)
+		answer = -1;
+	printf("%d\n", answer);
+
+	return 0;
+}
+
+
