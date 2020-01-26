@@ -1,0 +1,112 @@
+#include <iostream>
+#include <vector>
+#include <string>
+#include <algorithm>
+using namespace std;
+
+int num;
+vector<pair<int, int>> points;
+int min_dis = 100000;
+
+bool cmpx(pair<int, int> a, pair<int, int> b)
+{
+	if (a.first == b.first)
+		return a.second < b.second;
+	return a.first < b.first;
+}
+
+bool cmpy(pair<int, int> a, pair<int, int> b)
+{
+	if (a.second == b.second)
+		return a.first < b.first;
+	return a.second< b.second;
+}
+
+int dist(pair<int, int> a, pair<int, int> b)
+{
+	return (a.first - b.first) * (a.first - b.first) + (a.second - b.second) * (a.second - b.second);
+}
+
+void solve(int left, int right)
+{
+	if (right - left == 1)
+	{
+		min_dis = min(min_dis, dist(points[left], points[right]));
+		return;
+	}
+	if (right - left == 2)
+	{
+		min_dis = min({ min_dis, dist(points[left], points[right]), dist(points[left], points[left + 1]), dist(points[left + 1], points[right]) });
+		return;
+	}
+
+	int mid = (left + right) / 2;
+	solve(left, mid);
+	solve(mid, right);
+
+	//시간 단축을 위해 걸르는 방법인데, 최악의 경우 모든 점이 포함될 수도 있다.
+	int midline = (points[mid].first + points[mid + 1].first) / 2;
+
+	//vector<pair<int, int>> points_left;
+	//vector<pair<int, int>> points_right;
+
+	//for (int i = left; i <= right;i++)
+	//{
+	//	int tempdis = (midline - points[i].first) * (midline - points[i].first);
+	//	if (tempdis < min_dis)
+	//	{
+	//		if (i <= mid)
+	//			points_left.push_back(points[i]);
+	//		else
+	//			points_right.push_back(points[i]);
+	//	}
+	//}
+
+	//for (int i = 0; i < points_left.size();i++)
+	//{
+	//	for (int j = 0; j < points_right.size();j++)
+	//	{
+	//		min_dis = min(min_dis, dist(points_left[i], points_right[j]));
+	//	}
+	//}
+
+	vector<pair<int, int>> temp;
+	for (int i = left; i <= right;i++)
+	{
+		int tempdis = (midline - points[i].first) * (midline - points[i].first);
+		if (tempdis < min_dis)
+			temp.push_back(points[i]);
+	}
+
+	sort(temp.begin(), temp.end(), cmpy);
+
+	for (int i = 0; i < temp.size() - 1;i++)
+	{
+		for (int j = i + 1;j < temp.size();j++)
+		{
+			int tempdis = (temp[j].second - temp[i].second) * (temp[j].second - temp[i].second);
+			if (tempdis < min_dis)
+				min_dis = min(min_dis, dist(temp[i], temp[j]));
+		}
+	}
+
+	return;
+}
+
+int main()
+{
+	scanf_s("%d", &num);
+	for (int i = 0; i < num; i++)
+	{
+		int a, b;
+		scanf_s("%d", &a);
+		scanf_s("%d", &b);
+		points.push_back(make_pair(a, b));
+	}
+
+	sort(points.begin(), points.end(), cmpx);
+	solve(0, num - 1);
+	printf("%d\n", min_dis);
+
+	return 0;
+}
