@@ -1,0 +1,119 @@
+#include "pch.h"
+#include <iostream>
+#include <vector>
+#include <string>
+#include <algorithm>
+using namespace std;
+
+int cache[10000];
+string input;
+
+int classification(int left, int right)
+{
+	//모든 숫자가 같을 때
+	char temp = input[left];
+	bool flag = false;
+	for (int i = left+1; i <= right; i++)
+	{
+		if (temp != input[i])
+		{
+			flag = true;
+			break;
+		}
+	}
+	if (!flag)
+		return 1;
+
+	//1씩 증가하거나 감소할 때
+	flag = false;
+	int count = 0;
+	for (int i = left + 1; i <= right; i++)
+	{
+		if (input[i] - input[i - 1] != 1 && input[i]-input[i-1] != -1)
+		{
+			flag = true;
+			break;
+		}
+		count += input[i] - input[i - 1];
+	}
+	if (!flag && abs(count)==right-left)
+		return 2;
+
+	//두 개의 숫자가 번갈아가면서
+	int num1 = input[left];
+	int num2 = input[left + 1];
+	flag = false;
+	for (int i = left + 2; i <= right; i++)
+	{
+		if (left % 2 == i % 2 && num1 != input[i]-'0')
+		{
+			flag = true;
+			break;
+		}
+		else
+		{
+			if (num2 != input[i] - '0')
+			{
+				flag = true;
+				break;
+			}
+		}
+	}
+
+	if (!flag)
+		return 4;
+
+	//숫자가 등차수열 일때
+	int num = input[left + 1] - input[left];
+	flag = false;
+	for (int i = left + 2; i <= right; i++)
+	{
+		if (num != (input[i] - input[i - 1]))
+		{
+			flag = true;
+			break;
+		}
+	}
+	if (!flag)
+		return 5;
+
+	return 10;
+}
+
+int solve(int index)
+{
+	if (index == input.size())
+		return 0;
+
+	int& ret = cache[index];
+	if (ret != -1)
+		return ret;
+
+	ret = 987654321;
+	for (int i = 3; i <= 5; i++)
+	{
+		int temp = input.size() - (index + i);
+		if(temp != 1 && temp != 2 && temp >= 0)
+			ret = min(ret, classification(index, index+i-1) + solve(index + i));
+	}
+
+	return ret;
+}
+
+int main()
+{
+	ios_base::sync_with_stdio(false);
+	cin.tie(NULL);
+	cout.tie(NULL);
+
+	cin >> input;
+
+	//초기화
+	memset(cache, -1, sizeof(cache));
+
+	int answer=solve(0);
+
+	printf("%d\n", answer);
+
+	return 0;
+}

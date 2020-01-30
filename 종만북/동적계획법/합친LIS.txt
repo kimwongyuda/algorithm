@@ -1,0 +1,71 @@
+#include "pch.h"
+#include <iostream>
+#include <vector>
+#include <string>
+#include <algorithm>
+using namespace std;
+
+int cache[100][100];
+int arr[2][100];
+int n, m;
+int current;
+
+int jlis(int indexA, int indexB)
+{
+	int& ret = cache[indexA][indexB];
+
+	if (ret != -1)
+		return ret;
+
+	int cnt = 1;
+
+	for (int i = indexA; i < n; i++)
+	{
+		if ( current < arr[0][i])
+		{
+			current = arr[0][i];
+			cnt = max(cnt, 1 + jlis(indexA+1, indexB));
+		}
+	}
+
+	for (int i = indexB; i < m; i++)
+	{
+		if (current < arr[1][i])
+		{
+			current = arr[1][i];
+			cnt = max(cnt, 1 + jlis(indexA, indexB+1));
+		}
+	}
+
+	return ret = cnt;
+
+}
+
+int main()
+{
+	scanf_s("%d %d", &n, &m);
+
+	for (int i = 0; i < n; i++)
+		scanf_s("%d", &arr[0][i]);
+	for (int i = 0; i < m; i++)
+		scanf_s("%d", &arr[1][i]);
+
+	//초기화
+	memset(cache, -1, sizeof(cache));
+
+	int answer=1;
+
+	for (int i = 0; i < n; i++)
+	{
+		current = arr[0][i];
+		answer = max(answer, jlis(i+1, 0));
+	}
+	for (int i = 0; i < m; i++)
+	{
+		current = arr[1][i];
+		answer = max(answer, jlis(0, i+1));
+	}
+	printf("%d\n", answer);
+
+	return 0;
+}
