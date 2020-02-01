@@ -1,0 +1,85 @@
+#include <iostream>
+#include <vector>
+#include <string>
+#include <algorithm>
+using namespace std;
+
+int cache[100][10];
+vector<int> nums;
+int sum[100];
+int sum2[100];
+int n;
+int s;
+
+int minerror(int left, int right)
+{
+	//0.5를 더해 반올림 효과
+	if (left != 0)
+	{
+		int m = (int)(0.5 + (float)(sum[right] - sum[left - 1]) / (right - left + 1));
+		return sum2[right] - sum2[left - 1] - 2 * (sum[right] - sum[left - 1]) * m + m * m * (right - left + 1);
+	}
+	else
+	{
+		int m = (int)(0.5 + (float)(sum[right] - 0) / (right - left + 1));
+		return sum2[right] - 0 - 2 * (sum[right] - 0) * m + m * m * (right - left + 1);
+	}
+}
+
+int solve(int index, int cur_s)
+{
+	if (index == n)
+		return 0;
+	if (cur_s == 0)
+		return 987654321;
+
+	int& ret = cache[index][cur_s];
+	if (ret != -1)
+		return ret;
+
+	ret = 987654321;
+	for (int i = 1; index + i <= n; i++)
+	{
+		ret = min(ret, minerror(index, index + i - 1) + solve(index + i, cur_s - 1));
+	}
+
+	return ret;
+}
+
+int main()
+{
+	//초기화 및 입력
+	scanf_s("%d %d", &n, &s);
+	
+	for (int i = 0; i < n;i++) {
+		int num;
+		scanf_s("%d", &num);
+		nums.push_back(num);
+	}
+
+	sort(nums.begin(), nums.end());
+	
+	memset(cache, -1, sizeof(cache));
+	memset(sum, 0, sizeof(sum));
+	memset(sum2, 0, sizeof(sum2));
+
+	for (int i = 0; i < n;i++)
+	{
+		if (i == 0)
+		{
+			sum[i] = nums[i];
+			sum2[i] = nums[i] * nums[i];
+		}
+		else
+		{
+			sum[i] = sum[i - 1] + nums[i];
+			sum2[i] = sum2[i - 1] + nums[i] * nums[i];
+		}
+	}
+
+	//solve
+	int answer = solve(0, s);
+	printf("%d\n", answer);
+
+	return 0;
+}
