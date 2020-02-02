@@ -1,0 +1,63 @@
+#include <string>
+#include <vector>
+#include <iostream>
+#include <algorithm>
+
+using namespace std;
+
+vector<int> cache[8];
+
+vector<int> solve(int N, int count)
+{
+    if (!cache[count].empty())
+        return cache[count];
+
+    vector<int>& ret = cache[count];
+    vector<int> temp;
+
+    int num = 0;
+    for (int i = 0; i < count; i++)
+        num = N + num * i;
+
+    temp.push_back(num);
+    for (int i = 1; i < count; i++)
+    {
+        vector<int> temp1 = solve(N, i);
+        vector<int> temp2 = solve(N, count - i);
+        for (int j = 0; j < temp1.size(); j++)
+        {
+            for (int k = 0; k < temp2.size(); k++)
+            {
+                temp.push_back(temp1[j] + temp2[k]);
+                temp.push_back(temp1[j] - temp2[k]);
+                temp.push_back(temp1[j] * temp2[k]);
+                if (temp2[k] != 0)
+                    temp.push_back(temp1[j] / temp2[k]);
+            }
+        }
+    }
+
+    return ret = temp;
+}
+
+int solution(int N, int number) {
+
+    int answer = -1;
+    for (int i = 4; i <= 4; i++)
+    {
+        vector<int> temp = solve(N, i);
+        auto index = find(temp.begin(), temp.end(), number);
+        if (index != temp.end())
+        {
+            if (answer != -1)
+                answer = min(answer, i);
+        }
+    }
+
+    return answer;
+}
+
+int main()
+{
+    cout<<solution(5, 12);
+}
