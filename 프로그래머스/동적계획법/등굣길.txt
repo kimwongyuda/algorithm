@@ -1,0 +1,58 @@
+#include <string>
+#include <vector>
+#include <algorithm>
+
+using namespace std;
+int M, N;
+vector<vector<int>> temp;
+
+int cache[100][100];
+
+int solve(int p1, int p2)
+{
+    if ((p1 == M - 1 && p2 == N - 2) || (p1 == M - 2 && p2 == N - 1))
+        return 1;
+
+    int& ret = cache[p2][p1];
+    if (ret != -1)
+        return ret % 1000000007;
+
+    //오른, 아래
+    bool flag[2] = { false, false };
+    if (p1 + 1 == M)
+        flag[0] = true;
+    if (p2 + 1 == N)
+        flag[1] = true;
+
+    if (!flag[0] || !flag[1])
+        for (int i = 0; i < temp.size(); i++)
+        {
+            if (p1 + 1 == temp[i][0] - 1 && p2 == temp[i][1] - 1)
+                flag[0] = true;
+            if (p1 == temp[i][0] - 1 && p2 + 1 == temp[i][1] - 1)
+                flag[1] = true;
+        }
+
+    if (flag[0] && flag[1])
+        return ret = 0;
+    else if (flag[0] && !flag[1])
+        return ret = solve(p1, p2 + 1) % 1000000007;
+    else if (!flag[0] && flag[1])
+        return ret = solve(p1 + 1, p2) % 1000000007;
+    else
+        return ret = (solve(p1 + 1, p2) + solve(p1, p2 + 1)) % 1000000007;
+}
+
+int solution(int m, int n, vector<vector<int>> puddles) {
+    M = m;
+    N = n;
+    temp = puddles;
+    for (int i = 0; i < 100; i++)
+    {
+        for (int j = 0; j < 100; j++)
+            cache[i][j] = -1;
+    }
+    int answer = 0;
+    answer = solve(0, 0) % 1000000007;
+    return answer;
+}

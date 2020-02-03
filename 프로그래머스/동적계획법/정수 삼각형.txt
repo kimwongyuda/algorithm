@@ -1,0 +1,37 @@
+#include <string>
+#include <vector>
+#include <algorithm>
+
+using namespace std;
+
+int cache[500][500];
+int N;
+vector<vector<int>> temp;
+
+int solve(int height, int index)
+{
+    if (height == N - 1)
+        return temp[height][index];
+
+    int& ret = cache[height][index];
+    if (ret != -1)
+        return ret;
+
+    return ret = temp[height][index] + max(solve(height + 1, index), solve(height + 1, index + 1));
+}
+
+int solution(vector<vector<int>> triangle) {
+    N = triangle.size();
+    temp = triangle;
+
+    //memset(cache, -1, sizeof(cache));
+    for(int i=0;i<N;i++)
+    {
+        for(int j=0; j<i+1;j++)
+            cache[i][j]=-1;
+    }
+
+    int answer = 0;
+    answer = solve(0, 0);
+    return answer;
+}
