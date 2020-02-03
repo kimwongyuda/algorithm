@@ -1,0 +1,44 @@
+#include <string>
+#include <vector>
+#include <algorithm>
+
+using namespace std;
+
+int n, m;
+int cache[2000][2000];
+vector<int> left_, right_;
+
+int solve(int index_l, int index_r)
+{
+    if(index_l == n || index_r == m)
+        return 0;
+    
+    int& ret = cache[index_l][index_r];
+    if(ret!=-1)
+        return ret;
+    
+    bool flag = false;
+    if(left_[index_l] > right_[index_r])
+        flag = true;
+    if(flag)
+        return ret = max({solve(index_l+1, index_r), solve(index_l+1, index_r+1), solve(index_l,index_r+1)+right_[index_r]});
+    else
+        return ret = max(solve(index_l+1, index_r), solve(index_l+1, index_r+1));
+}
+
+int solution(vector<int> left, vector<int> right) {
+    n = left.size();
+    m = right.size();
+    left_ = left;
+    right_ = right;
+    
+    for(int i=0; i<2000; i++)
+    {
+        for(int j=0; j<2000;j++)
+            cache[i][j] = -1;
+    }
+    
+    int answer = 0;
+    answer = solve(0,0);
+    return answer;
+}
