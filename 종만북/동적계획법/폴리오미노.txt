@@ -1,0 +1,44 @@
+#include <iostream>
+#include <vector>
+#include <string>
+#include <algorithm>
+using namespace std;
+
+int N;
+int cache[100][100];
+int MOD = 10000000;
+
+int solve(int head, int rest)
+{
+	if (rest == 0)
+		return 1;
+
+	int& ret = cache[head][rest];
+	if (ret != -1)
+		return ret;
+
+	for (int i = 0;i < rest;i++)
+	{
+		ret += (solve(i + 1, rest - i - 1) * (i + 1 + head - 1)) % MOD;
+		ret = ret % MOD;
+	}
+
+	return ret;
+	
+}
+
+int main()
+{
+	scanf_s("%d", &N);
+	memset(cache, -1, sizeof(cache));
+	int answer = 0;
+	for (int i = 0; i < N;i++)
+	{
+		answer += solve(N - i, i) % MOD;
+		answer = answer % MOD;
+	}
+	
+	printf("%d\n", answer);
+
+	return 0;
+}
