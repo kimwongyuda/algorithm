@@ -1,0 +1,72 @@
+#include <iostream>
+#include <vector>
+#include <string>
+#include <algorithm>
+using namespace std;
+
+int N;
+int cache[100];
+int MOD = 1000000007;
+
+int solve(int index)
+{
+	if (index == N)
+		return 1;
+
+	int& ret = cache[index];
+	if (ret != -1)
+		return ret;
+
+	if (N % 2 == 1)
+	{
+		if (N / 2 == index)
+		{
+			if (index + 2 > N)
+				return ret = (solve(index + 1) - 1) % MOD;
+			else
+				return ret = (solve(index + 1) - 1 + solve(index + 2)) % MOD;
+		}
+		else
+		{
+			if (index + 2 > N)
+				return ret = solve(index + 1) % MOD;
+			else
+				return ret = (solve(index + 1)+solve(index+2)) % MOD;
+		}
+	}
+	else
+	{
+		if (N / 2 -1 == index)
+		{
+			if (index + 2 > N)
+				return ret = (solve(index + 1) - 1) % MOD;
+			else
+				return ret = (solve(index + 1) - 1 + solve(index + 2) - 1) % MOD;
+		}
+		else if (N / 2 - 2 == index)
+		{
+			if (index + 2 > N)
+				return ret = solve(index + 1) % MOD;
+			else
+				return ret = (solve(index + 1) + solve(index + 2) - 1) % MOD;
+		}
+		else
+		{
+			if (index + 2 > N)
+				return ret = solve(index + 1) % MOD;
+			else
+				return ret = (solve(index + 1) + solve(index + 2)) % MOD;
+		}
+	}
+}
+
+int main()
+{
+	scanf_s("%d", &N);
+	memset(cache, -1, sizeof(cache));
+	int answer = solve(0) % MOD;
+	
+	printf("%d\n", answer);
+
+	return 0;
+}
