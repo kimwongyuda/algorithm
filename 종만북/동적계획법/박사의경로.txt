@@ -1,0 +1,93 @@
+#include <iostream>
+#include <vector>
+#include <string>
+#include <algorithm>
+using namespace std;
+
+int n_places, days, start_place, target_place;
+int connected[50][50];
+int n_compute_places;
+vector<int> compute_places;
+vector<double> answer;
+double cache[50][100];
+
+// 이어진 마을의 개수
+double count_connected(int place)
+{
+	double count = 0;
+	for (int i = 0; i < n_places; i++)
+	{
+		if (connected[place][i] == 1)
+			count += 1;
+	}
+	return count;
+}
+
+//거꾸로 버전이 더 빠르다고 하지만, 본인 생각은 input에 따라 어차피 똑같아진다고 생각
+//따라서 순행 버전만 작성
+double solve(int cur_day, int cur_place)
+{
+	if (cur_day == days)
+	{
+		if (cur_place == target_place)
+			return 1.0;
+		else
+			return 0.0;
+	}
+
+	double& ret = cache[cur_day][cur_place];
+	if (ret != -1.0)
+		return ret;
+
+	ret = 0;
+	for (int i = 0; i < n_places;i++)
+	{
+		if (connected[cur_place][i] == 1)
+			ret += solve(cur_day + 1, i) / count_connected(cur_place);
+	}
+	return ret;
+}
+
+int main()
+{
+	//입력
+	scanf_s("%d %d %d", &n_places, &days, &start_place);
+	for (int i = 0; i < n_places; i++)
+	{
+		for (int j = 0; j < n_places; j++)
+			scanf_s("%d", &connected[i][j]);
+	}
+
+	scanf_s("%d", &n_compute_places);
+
+	for (int i = 0; i < n_compute_places;i++)
+	{
+		int temp;
+		scanf_s("%d", &temp);
+		compute_places.push_back(temp);
+	}
+
+	//solve
+	for (int i = 0; i < n_compute_places;i++)
+	{
+		//초기화
+		for (int a = 0; a < n_places; a++)
+		{
+			for (int b = 0; b < n_places; b++)
+				cache[a][b] = -1;
+		}
+		target_place = compute_places[i];
+		double temp = solve(0, start_place);
+		answer.push_back(temp);
+	}
+
+	
+	//답 출력
+	for (int i = 0; i < n_compute_places;i++)
+	{
+		printf("%lf ", answer[i]);
+	}
+	printf("\n");
+
+	return 0;
+}
