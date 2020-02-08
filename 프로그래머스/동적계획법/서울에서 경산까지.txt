@@ -1,0 +1,47 @@
+#include <iostream>
+#include <vector>
+#include <string>
+#include <algorithm>
+using namespace std;
+
+//K를 캐시로 잡아야 환경이 변하지 않음
+int cache[100][100000];
+int input_data[100][4];
+int length;
+
+int solve(int K, int city)
+{
+    if(K < 0) 
+        //0을 리턴하면 음수여도 가져가기 때문에 무진장 큰 수 를 리턴 
+        return -100000;
+
+    if(length == city) return 0;
+
+    int& ret = cache[city][K];
+    if(ret != -1) 
+        return ret;
+
+    ret = max(solve( K - input_data[city][0], city+1)+input_data[city][1]
+              , solve(K - input_data[city][2], city+1)+ input_data[city][3]);
+    return ret;
+}
+
+int solution(int K, vector<vector<int>> travel) {
+    
+    length = travel.size();
+
+    for (int i = 0; i < travel.size();i++)
+    {
+        for (int j = 0; j < 4;j++)
+            input_data[i][j] = travel[i][j];
+    }
+    
+    for (int i = 0; i < 100;i++)
+    {
+        for (int j = 0; j < 100000;j++)
+            cache[i][j] = -1;
+    }
+
+    int answer = solve(K, 0);
+    return answer;
+}
