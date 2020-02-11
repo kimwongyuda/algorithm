@@ -1,0 +1,90 @@
+#include <string>
+#include <vector>
+#include <algorithm>
+#include <iostream>
+
+using namespace std;
+
+int solution(int n, vector<int> lost, vector<int> reserve) {
+    int answer = 0;
+    
+    for(int i=0; i<lost.size(); i++)
+    {
+        for(int j=0; j<reserve.size(); j++)
+        {
+            if(lost[i] == reserve[j])
+            {
+                lost.erase(lost.begin()+i);
+                reserve.erase(reserve.begin()+j);
+            }
+        }
+    }
+    
+    for (int i = 1; i < n + 1; i++)
+    {
+        auto it = find(lost.begin(), lost.end(), i);
+        //lost
+        if (it != lost.end())
+        {
+            //잃어버렸지만 여분도 있었다.
+            auto it2 = find(reserve.begin(), reserve.end(), i);
+            if (it2 != reserve.end())
+            {
+                lost.erase(it);
+                reserve.erase(it2);
+                answer += 1;
+            }
+            //잃어버려서 빌려야 한다.
+            else
+            {
+                //잃어버린애가 처음일 때
+                if (it == lost.begin())
+                {
+                    auto it3 = find(reserve.begin(), reserve.end(), i + 1);
+                    if (it3 != reserve.end())
+                    {
+                        reserve.erase(it3);
+                        lost.erase(it);
+                        answer += 1;
+                    }
+                }
+                //마지막일 때
+                else if (it == lost.end() - 1)
+                {
+                    auto it3 = find(reserve.begin(), reserve.end(), i - 1);
+                    if (it3 != reserve.end())
+                    {
+                        reserve.erase(it3);
+                        lost.erase(it);
+                        answer += 1;
+                    }
+                }
+                //중간일 때
+                else
+                {
+                    auto it3 = find(reserve.begin(), reserve.end(), i - 1);
+                    if (it3 != reserve.end())
+                    {
+                        reserve.erase(it3);
+                        lost.erase(it);
+                        answer += 1;
+                        continue;
+                    }
+                    auto it4 = find(reserve.begin(), reserve.end(), i + 1);
+                    if (it4 != reserve.end())
+                    {
+                        reserve.erase(it4);
+                        lost.erase(it);
+                        answer += 1;
+                    }
+                }
+            }
+        }
+        //not lost
+        else
+        {
+            answer = answer + 1;
+        }
+    }
+    return answer;
+}

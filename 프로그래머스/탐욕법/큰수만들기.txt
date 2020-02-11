@@ -1,0 +1,45 @@
+#include <string>
+#include <vector>
+
+using namespace std;
+
+string solution(string number, int k) {
+    
+    int init_length = number.size() - k;
+    
+    string answer = "";
+    if(k==0)
+        return number;
+    while(true)
+    {
+        int length = number.size();
+        string first = number.substr(0,k+1);
+        string second = number.substr(k+1);
+        
+        int max_idx = 0;
+        char max_char = first[0];
+        
+        for(int i=1; i<first.size();i++)
+        {
+            if(first[i] > max_char)
+            {
+                max_char = first[i];
+                max_idx = i;
+            }
+        }
+        k = k - max_idx;
+        answer += max_char;
+        number= first.substr(max_idx+1)+second;
+        
+        if(answer.size() == init_length)
+        {
+            break;
+        }
+        if(k==0)
+        {
+            answer += second;
+            break;
+        }
+    }
+    return answer;
+}
