@@ -1,0 +1,36 @@
+#include <string>
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+int solution(vector<int> people, int limit) {
+    
+    //sort가 중요
+    sort(people.begin(), people.end());
+    
+    int answer = 0;
+    int start_idx = 0;
+    int end_idx = people.size() - 1;
+    
+    while(start_idx<end_idx)
+    {
+        if(people[start_idx] + people[end_idx] <= limit)
+        {
+            answer+=1;
+            start_idx +=1;
+            end_idx -=1;
+        }
+        else
+        {
+            answer+=1;
+            end_idx -=1;
+        }
+        if(start_idx == end_idx)
+        {
+            answer+=1;
+            break;
+        }
+    }
+    
+    return answer;
+}
