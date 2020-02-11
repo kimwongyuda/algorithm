@@ -1,0 +1,69 @@
+#include <iostream>
+#include <vector>
+#include <string>
+#include <algorithm>
+#include <cmath>
+using namespace std;
+
+//fmod는 실수일때 mod 하고 싶으면 사용하는 것이다.
+const double pi = 2.0 * acos(0);
+int n;
+double y[100], x[100], r[100];
+pair<double, double> ranges[100];
+
+int solve(double begin, double end, int idx)
+{
+	if (begin >= end)
+		return 0;
+
+	int count = 0;
+	double next_begin = -1;
+	int next_idx = 0;
+	for (int i = idx; i < n; i++)
+	{
+		if (ranges[i].first <= begin)
+		{
+			next_begin = max(next_begin, ranges[i].second);
+			if (next_begin == ranges[i].second)
+				next_idx = i;
+		}
+	}
+	if (next_begin < begin)
+		return 987654321;
+
+	return 1 + solve(next_begin, end, next_idx + 1);
+}
+
+int main()
+{
+	//입력
+	scanf_s("%d", &n);
+	for (int i = 0; i < n; i++)
+	{
+		scanf_s("%lf", &y[i]);
+		scanf_s("%lf", &x[i]);
+		scanf_s("%lf", &r[i]);
+	}
+
+	//convert
+	for (int i = 0; i < n; i++)
+	{
+		double loc = fmod( 2*pi + atan2(y[i], x[i]), 2*pi);
+		double range = 2.0 * asin(r[i] / 16.0);
+		ranges[i] = make_pair(loc - range, loc + range);
+	}
+
+	sort(ranges, ranges + n);
+
+	int answer = 987654321;
+	for (int i = 0; i < n; i++)
+	{
+		if(ranges[i].first <= 0 || ranges[i].second >= 2.0 * pi)
+			answer = min(answer, 1 +solve(fmod(ranges[i].second, 2.0*pi), fmod(2.0*pi + ranges[i].first, 2.0*pi), 0));
+	}
+	if (answer >= 987654321)
+		printf("IMPOSSIBLE\n");
+	else
+		printf("%d\n", answer);
+	return 0;
+}
