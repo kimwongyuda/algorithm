@@ -1,0 +1,44 @@
+#include <string>
+#include <vector>
+#include <algorithm>
+
+using namespace std;
+
+int islands[100];
+
+int solution(int n, vector<vector<int>> costs) {
+    int answer = 0;
+    
+    //islands 초기화
+    for(int i=0; i<n;i++)
+    {
+        islands[i] = 0;
+    }
+        
+    islands[0] = 1;
+        
+    for(int i=0; i<n-1;i++)
+    {
+        int min_ = 987654321;
+        int index1, index2;
+        
+        for(int j=0; j<costs.size();j++)
+        {
+            if((islands[costs[j][0]] == 1 || islands[costs[j][1]] == 1) && !(islands[costs[j][0]] == 1 && islands[costs[j][1]] == 1) )
+            {
+                if(costs[j][2] < min_)
+                {
+                min_ = costs[j][2];
+                index1 = costs[j][0];
+                index2 = costs[j][1];
+                }
+            }
+        }
+        answer+=min_;
+        
+        islands[index1] = 1;
+        islands[index2] = 1;
+    }
+
+    return answer;
+}
