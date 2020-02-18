@@ -1,0 +1,56 @@
+#include <string>
+#include <vector>
+#include <cmath>
+#include <iostream>
+#include <algorithm>
+
+using namespace std;
+
+int ceil(int a, int b)
+{
+	return (a + b - 1) / b;
+}
+
+int gcd(int a, int b)
+{
+	if (b == 0) return a;
+	return gcd(b, a % b);
+}
+
+// 직관적인 방법
+int main()
+{
+
+	vector<int> recipe = { 4, 6, 2, 4 };
+	vector<int> put = { 7, 4, 2, 4 };
+	int n = recipe.size();
+	vector<int> ret(n);
+
+	// 일단 1병은 무조건 넣어야함.
+	for (int i = 0; i < n; i++)
+	{
+		if (recipe[i] - put[i] > 0)
+		{
+			ret[i] += recipe[i] - put[i];
+			put[i] = recipe[i];
+		}
+	}
+
+	int gcd_ = recipe[0];
+	for (int i = 1; i < n; i++)
+		gcd_ = gcd(recipe[i], gcd_);
+
+	//최소한 한병은 만듬.
+	int a = gcd_;
+
+	// 7/4 <= a/2 형태를 만족하는 최소의 정수
+	for (int i = 0; i < n; i++)
+		a = max(a, ceil(put[i]*gcd_, recipe[i]));
+
+	for (int i = 0; i < n; i++)
+	{
+		ret[i] += recipe[i] * a / gcd_ - put[i];
+	}
+
+	return 0;
+}

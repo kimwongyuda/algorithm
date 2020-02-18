@@ -1,0 +1,57 @@
+#include <string>
+#include <vector>
+#include <cmath>
+#include <iostream>
+#include <algorithm>
+
+using namespace std;
+
+// 직관적인 방법
+int main()
+{
+
+	// recipe
+	// put
+
+	vector<int> recipe = { 4, 6, 2, 4 };
+	vector<int> put = { 7, 4, 2, 4 };
+	int n = recipe.size();
+	vector<int> ret(n);
+
+	// 일단 1병은 무조건 넣어야함.
+	for (int i = 0; i < n; i++)
+	{
+		if (recipe[i] - put[i] > 0)
+		{
+			ret[i] += recipe[i] - put[i];
+			put[i] = recipe[i];
+		}
+	}
+
+	// 비율 맞을 때까지 서로 늘려가는 것을 반복, 단 몇 바퀴 돌지 모름.
+	while (true)
+	{
+		bool ok = true;
+
+		for (int i = 0; i < n; i++)
+		{
+			for (int j = 0; j < n; j++)
+			{
+				//ceil 방법임 = 지금 수보다 크지만 가장 작은 정수
+				int required = (put[i] * recipe[j] + recipe[i] - 1) / recipe[i];
+
+				if (required > put[j])
+				{
+					ok = false;
+					ret[j] += required - put[j];
+					put[j] = required;
+				}
+			}
+		}
+
+		if (ok)
+			break;
+	}
+
+	return 0;
+}
