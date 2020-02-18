@@ -1,0 +1,75 @@
+#include <string>
+#include <vector>
+#include <cmath>
+#include <iostream>
+#include <algorithm>
+
+using namespace std;
+
+
+int minFactor[10000001];
+int minFactorPower[10000001];
+int Factors[10000001];
+
+int main()
+{
+	// 1.. 약수 개수 구하기, 최악의 방법 (범위가 1~1000,0000 이고 일때 각 숫자마다 루트n 씩 돌아야함)
+	// 예를 들어 9 -> 1 ~ 3 까지 돌면서 약수인지 아닌지 찾으면 된다. => 매우 느림
+
+	// 2.. 약수는 소인수 분해의 지수로 구할 수 있으니 한 번 에라토스테네스를 이용해서
+	// cache를 진행해서 여러번 하더라도 코스트 없이 진행한다.
+
+	//에라토스테네스의 체
+	minFactor[0] = -1;
+	minFactor[1] = -1;
+
+	for (int i = 2; i <= 10000000;i++)
+	{
+		minFactor[i] = i;
+	}
+
+	int sqrt_ = (int)(sqrt(10000000));
+	for (int i = 2; i <= sqrt_;i++)
+	{
+		if (minFactor[i] == i)
+		{
+			for (int j = i * i; j <= 10000000; j += i)
+				minFactor[j] = i;
+		}
+	}
+
+	//약수의 개수
+
+	Factors[0] = 0;
+	Factors[1] = 1;
+
+	for (int i = 2; i <= 10000000; i++)
+	{
+		//소수라면
+		if (minFactor[i] == i)
+		{
+			minFactorPower[i] = 1;
+			Factors[i] = 2;
+		}
+
+		else
+		{
+			// 최소 소인수
+			int p = minFactor[i];
+
+			// 그 소인수를 뺀 나머지를 가지고 처리
+			int m = i / p;
+
+			// 최소 소인수 말고 다른 것이 더 있을 때
+			if (p != minFactor[m])
+				minFactorPower[i] = 1;
+			// 최소 소인수로만 이루어져 있을 때
+			else
+				minFactorPower[i] = minFactorPower[m] + 1;
+
+			Factors[i] = (Factors[m] / minFactorPower[i]) * (minFactorPower[i] + 1);
+		}
+	}
+
+	return 0;
+}

@@ -1,0 +1,49 @@
+#include <string>
+#include <vector>
+#include <cmath>
+#include <iostream>
+#include <algorithm>
+
+using namespace std;
+
+int n; // 특정 숫자
+int isPrime[100001];
+
+int main()
+{
+	// 에라토스테네스의 체
+	// 특정 숫자 이하의 모든 양의 정수(1 빼고) 소수 판별 미리 cache 해놓음
+	// nlog(logn)이 걸리지만 한번 해놓으면 여러번 사용할 때는 시간 거의 아예 안들음
+	// 또한 목적에 따라 변형하며 사용 가능
+
+	scanf_s("%d", &n);
+
+	for (int i = 0; i < 100001; i++)
+	{
+		isPrime[i] = i;
+	}
+
+	int sqrt_ = (int)(sqrt(n));
+
+	for (int i = 2; i <= sqrt_; i++)
+	{
+		if (isPrime[i] == i)
+		{
+			for (int j = i * i; j <= n; j += i)
+			{
+				isPrime[j] = i;
+			}
+		}
+	}
+
+	vector<int> numbers;
+
+	// 에라토스테네스의 체로 소인수 분해하기
+	while (n > 1)
+	{
+		numbers.push_back(isPrime[n]);
+		n = n / isPrime[n];
+	}
+
+	return 0;
+}

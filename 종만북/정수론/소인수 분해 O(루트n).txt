@@ -1,0 +1,32 @@
+#include <string>
+#include <vector>
+#include <cmath>
+#include <iostream>
+#include <algorithm>
+
+using namespace std;
+
+int main()
+{
+	//소인수 분해 하기 O(루트n)
+
+	int a = 21;
+	vector<int> numbers;
+
+	int sqrt_ = (int)(sqrt(a));
+
+	for (int i = 2; i <= sqrt_; i++)
+	{
+		while (a % i == 0)
+		{
+			a = a / i;
+			numbers.push_back(i);
+		}
+	}
+
+	if (a > 1)
+		numbers.push_back(a);
+
+
+	return 0;
+}

@@ -1,0 +1,26 @@
+#include <string>
+#include <vector>
+#include <cmath>
+#include <iostream>
+#include <algorithm>
+
+using namespace std;
+
+int Factors[10000001];
+
+int main()
+{
+	// 아니면 nlogn 이지만 엄청 직관적인 방법
+
+	memset(Factors, 0, sizeof(Factors));
+
+	for (int i = 1; i < 10000000; i++)
+	{
+		for (int j = i; j <= 10000000; j = j + i)
+		{
+			Factors[j] += 1;
+		}
+	}
+
+	return 0;
+}
