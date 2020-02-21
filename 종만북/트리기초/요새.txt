@@ -1,0 +1,111 @@
+#include <string>
+#include <vector>
+#include <cmath>
+#include <iostream>
+#include <algorithm>
+
+using namespace std;
+
+int n;
+int x[100], y[100], r[100];
+int longest = 0;
+
+struct TreeNode {
+	vector<TreeNode*> children;
+};
+
+bool isChild(int root, int ch)
+{
+	//거리 계산
+	int dis = (y[root] - y[ch]) * (y[root] - y[ch]) + (x[root] - x[ch]) * (x[root] - x[ch]);
+	int rdis = (r[root] - r[ch]) * (r[root] - r[ch]);
+
+	if (rdis > dis&& r[root] > r[ch])
+	{
+		for (int i = 0; i < n; i++)
+		{
+			int dis_1 = (y[root] - y[i]) * (y[root] - y[i]) + (x[root] - x[i]) * (x[root] - x[i]);
+			int rdis_1 = (r[root] - r[i]) * (r[root] - r[i]);
+
+			int dis_2 = (y[i] - y[ch]) * (y[i] - y[ch]) + (x[i] - x[ch]) * (x[i] - x[ch]);
+			int rdis_2 = (r[i] - r[ch]) * (r[i] - r[ch]);
+
+			if (i != root && i != ch && (rdis_1 > dis_1 && r[root] > r[i]) && (rdis_2 > dis_2 && r[i] > r[ch]))
+			{
+				return false;
+			}
+		}
+	}
+	else
+		return false;
+}
+
+TreeNode* getTree(int root)
+{
+	TreeNode* ret = new TreeNode();
+	for (int ch = 0; ch < n; ch++)
+	{
+		if (isChild(root, ch))
+			ret->children.push_back(getTree(ch));
+	}
+
+	return ret;
+}
+
+int height(TreeNode* root)
+{
+	vector<int> heights;
+
+	for (int i = 0; i < root->children.size();i++)
+		heights.push_back(height(root->children[i]));
+
+	if (heights.empty())
+		return 1;
+
+	sort(heights.begin(), heights.end());
+
+	if (heights.size() >= 2)
+		longest = max(longest, heights[heights.size() - 2] + heights[heights.size() - 1]);
+
+	return heights.back() + 1;
+}
+
+int main()
+{	
+	n = 8;
+	
+	//
+	x[0] = 21;
+	x[1] = 15;
+	x[2] = 13;
+	x[3] = 12;
+	x[4] = 19;
+	x[5] = 30;
+	x[6] = 32;
+	x[7] = 32;
+
+	//
+	y[0] = 15;
+	y[1] = 15;
+	y[2] = 12;
+	y[3] = 12;
+	y[4] = 19;
+	y[5] = 24;
+	y[6] = 10;
+	y[7] = 9;
+
+	//
+	r[0] = 20;
+	r[1] = 10;
+	r[2] = 5;
+	r[3] = 3;
+	r[4] = 2;
+	r[5] = 5;
+	r[6] = 7;
+	r[7] = 4;
+
+	TreeNode* mytree = getTree(0);
+
+	cout << longest << endl;
+	return 0;
+}

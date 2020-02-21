@@ -1,0 +1,42 @@
+#include <string>
+#include <vector>
+#include <cmath>
+#include <iostream>
+#include <algorithm>
+
+using namespace std;
+
+vector<int> preorder = { 27, 16, 9, 12, 54, 36, 72 };
+vector<int> inorder = { 9, 12, 16, 27, 36, 54, 72 };
+
+vector<int> slice(vector<int> v, int a, int b)
+{
+	return vector<int>(v.begin() + a, v.begin() + b);
+}
+
+void printpostorder(vector<int> pre, vector<int> in)
+{
+	int N = pre.size();
+	if (pre.empty())
+		return;
+
+	int root = pre[0];
+	
+	auto L = find(in.begin(), in.end(), root) - in.begin();
+
+	int R = N - L - 1;
+
+	//1,4 => 1, 2, 3 // 크기 3
+	printpostorder(slice(pre, 1, L+1), slice(in, 0, L));
+	printpostorder(slice(pre, L+1, N), slice(in, L+1, N));
+
+	cout << root << ' ';
+}
+
+int main()
+{
+
+	printpostorder(preorder, inorder);
+		
+	return 0;
+}
