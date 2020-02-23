@@ -1,0 +1,61 @@
+#include <string>
+#include <vector>
+#include <cmath>
+#include <iostream>
+#include <algorithm>
+#include <map>
+
+using namespace std;
+
+bool isPrime(int n)
+{
+	if (n == 1)
+		return true;
+	if (n == 2)
+		return true;
+
+	int sqrt_ = (int)(sqrt(n));
+
+	for (int i = 2; i <= sqrt_; i++)
+	{
+		if (n % i == 0)
+			return false;
+	}
+
+	return true;
+}
+
+string temp = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+int main()
+{
+	ios_base::sync_with_stdio(false); 
+	cin.tie(NULL); 
+	cout.tie(NULL);
+
+	map<char, int> mymap;
+
+	for (int i = 0; i < 52; i++)
+	{
+		mymap[temp[i]] = i + 1;
+	}
+
+	string input;
+	cin >> input;
+
+	int number = 0;
+
+	for (int i = 0; i < input.size();i++)
+	{
+		number += mymap[input[i]];
+	}
+
+	if (isPrime(number))
+		cout << "It is a prime word.";
+	else
+		cout << "It is not a prime word.";
+
+
+	return 0;
+
+}

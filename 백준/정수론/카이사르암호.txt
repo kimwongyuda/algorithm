@@ -1,0 +1,34 @@
+#include <string>
+#include <vector>
+#include <cmath>
+#include <iostream>
+#include <algorithm>
+
+using namespace std;
+
+char new_alphabet[26] = { 'X', 'Y', 'Z', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W'};
+
+int main()
+{
+	ios_base::sync_with_stdio(false); 
+	cin.tie(NULL); 
+	cout.tie(NULL);
+
+	string input;
+	cin >> input;
+
+	string answer;
+
+	for (int i = 0; i < input.size(); i++)
+	{
+		int temp = (input[i] - 'A' ) % 26;
+		answer += new_alphabet[temp];
+	}
+
+	cout << answer;
+
+
+
+	return 0;
+
+}
