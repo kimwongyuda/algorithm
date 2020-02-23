@@ -1,0 +1,93 @@
+#include <string>
+#include <vector>
+#include <cmath>
+#include <iostream>
+#include <algorithm>
+#include <map>
+
+using namespace std;
+
+struct TreeNode {
+	int num;
+	vector<TreeNode*> childs;
+};
+
+int N;
+vector<int> input_list;
+int removenum;
+
+TreeNode* getTree(int n)
+{
+	TreeNode* ret = new TreeNode;
+
+	ret->num = n;
+	for (int i = 0; i < input_list.size();i++)
+	{
+		if (input_list[i] == n)
+			ret->childs.push_back(getTree(i));
+	}
+
+	return ret;
+}
+
+int solve(TreeNode* cur_node)
+{
+	if (cur_node->num == removenum)
+		return 0;
+
+	if (cur_node->childs.size() == 0)
+		return 1;
+
+	int ret = 0;
+
+	for (int i = 0; i < cur_node->childs.size(); i++)
+	{
+		ret += solve(cur_node->childs[i]);
+	}
+
+	if (ret == 0)
+		ret = 1;
+
+	return ret;
+
+}
+
+int main()
+{
+
+	ios_base::sync_with_stdio(false); 
+	cin.tie(NULL); 
+	cout.tie(NULL);
+
+	cin >> N;
+
+	for (int i = 0; i < N; i++)
+	{
+		int num;
+		cin >> num;
+		input_list.push_back(num);
+	}
+
+	cin >> removenum;
+
+	vector<int> root_nums;
+	for (int i = 0; i < input_list.size();i++)
+	{
+		if (input_list[i] == -1)
+			root_nums.push_back(i);
+	}
+
+	int answer = 0;
+
+	for (int i = 0; i < root_nums.size();i++)
+	{
+		TreeNode* root;
+		root = getTree(root_nums[i]);
+		answer += solve(root);
+	}
+
+	cout << answer;
+
+	return 0;
+
+}
