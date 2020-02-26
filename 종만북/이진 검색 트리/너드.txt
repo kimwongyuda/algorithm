@@ -1,0 +1,81 @@
+
+
+#include <string>
+#include <vector>
+#include <algorithm>
+#include <iostream>
+#include <map>
+using namespace std;
+
+int N;
+vector<pair<int, int>> inputs;
+
+//균형 이진트리 기반임. 넣으면 알아서 정렬된다.
+map<int, int> coords;
+
+bool isDominated(pair<int, int> item)
+{
+	auto it = coords.lower_bound(item.first);
+
+	//지배 당하지 않음, 오른쪽 없음 그냥 무조건 추가임.
+	if (it == coords.end())
+		return false;
+
+	return item.second < it->second;
+}
+
+void removeitems(pair<int,int> item)
+{
+	auto it = coords.lower_bound(item.first);
+	
+	if (it == coords.begin())
+		return;
+
+	it--;
+
+	while (true)
+	{
+		if (it == coords.begin())
+			break;
+
+		if (item.second < it->second)
+			break;
+
+		else
+		{
+			auto jt = it;
+			it--;
+			coords.erase(jt);
+		}
+	}
+}
+
+void solve(pair<int, int> item)
+{
+	if (isDominated(item))
+		return;
+
+	removeitems(item);
+
+	coords[item.first] = item.second;
+}
+
+int main()
+{
+	scanf_s("%d", &N);
+
+	for (int i = 0; i < N; i++)
+	{
+		pair<int, int> temp;
+		scanf_s("%d %d", &temp.first, &temp.second);
+		inputs.push_back(temp);
+	}
+
+	for (int i = 0; i < N; i++)
+	{
+		solve(inputs[i]);
+	}
+
+	printf("%d\n", coords.size());
+
+}
