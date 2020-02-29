@@ -1,0 +1,72 @@
+#include <string>
+#include <vector>
+#include <cmath>
+#include <iostream>
+#include <algorithm>
+#include <map>
+#include <queue>
+
+using namespace std;
+
+int N;
+int K;
+vector<int> psum;
+int mod = 20091101;
+
+int solve1()
+{
+	vector<int> count(K, 0);
+
+	for (int i = 0; i<psum.size();i++)
+		count[psum[i]]++;
+
+	int ret = 0;
+	for (int i = 0; i < count.size(); i++)
+	{
+		ret += (count[i] * (count[i] - 1)) / 2;
+	}
+
+	return ret;
+}
+
+int solve2()
+{
+	vector<int> ret(psum.size(), 0);
+	vector<int> prev(K, -1);
+
+	for (int i = 0; i < psum.size(); i++)
+	{
+		if (i > 0)
+			ret[i] = ret[i - 1];
+		else
+			ret[i] = 0;
+
+		int loc = prev[psum[i]];
+
+		if (loc != -1)
+			ret[i] = max(ret[i], ret[loc] + 1);
+
+		prev[psum[i]] = i;
+	}
+
+	return ret.back();
+}
+
+
+int main()
+{
+	scanf_s("%d", &N);
+	scanf_s("%d", &K);
+	
+	psum.push_back(0);
+	for (int i = 1; i < N+1; i++)
+	{
+		int temp;
+		scanf_s("%d", &temp);
+		psum.push_back((temp + psum[i-1]) % K);
+	}
+
+	printf("%d %d\n", solve1(), solve2());
+
+	return 0;
+}
