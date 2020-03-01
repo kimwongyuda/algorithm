@@ -1,0 +1,72 @@
+#include <string>
+#include <vector>
+#include <cmath>
+#include <iostream>
+#include <algorithm>
+#include <map>
+#include <queue>
+
+using namespace std;
+
+int N;
+vector<int> inputs;
+priority_queue<int, vector<int>, greater<int>> minheap;
+priority_queue<int, vector<int>, less<int>> maxheap;
+
+int main()
+{
+	scanf_s("%d", &N);
+
+	for (int i = 0; i < N; i++)
+	{
+		int temp;
+		scanf_s("%d", &temp);
+		inputs.push_back(temp);
+	}
+
+	for (int i = 0; i < N; i++)
+	{
+		if (maxheap.size() == minheap.size())
+		{
+			if (minheap.empty())
+			{
+				maxheap.push(inputs[i]);
+			}
+			//만약 비어있지 않다면
+			else
+			{
+				if (inputs[i] > minheap.top())
+				{
+					int temp;
+					temp = minheap.top();
+					minheap.pop();
+					maxheap.push(temp);
+					minheap.push(inputs[i]);
+				}
+				else
+				{
+					maxheap.push(inputs[i]);
+				}
+			}
+		}
+		else
+		{
+			if (inputs[i] < maxheap.top())
+			{
+				int temp;
+				temp = maxheap.top();
+				maxheap.pop();
+				minheap.push(temp);
+				maxheap.push(inputs[i]);
+			}
+			else
+			{
+				minheap.push(inputs[i]);
+			}
+		}
+		printf("%d\n", maxheap.top());
+	}
+
+
+	return 0;
+}
