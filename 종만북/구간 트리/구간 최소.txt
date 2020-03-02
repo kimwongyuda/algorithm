@@ -1,0 +1,63 @@
+
+#include <iostream>
+#include <cstdio>
+#include <algorithm>
+#include <iostream>
+#include <string>
+
+using namespace std;
+
+int n=9;
+int arr[9] = { 1,2,1,2,3,1,2,3,4 };
+int seg[36];
+
+int init(int left, int right, int node)
+{
+	if (left == right)
+		return seg[node] = arr[left];
+
+	int mid = (left + right) / 2;
+	int leftmin = init(left, mid, node * 2);
+	int rightmin = init(mid + 1, right, node * 2 + 1);
+	return seg[node] = min(leftmin, rightmin);
+}
+
+//left ~ right 찾고 싶은 구간, nodeleft ~ noderight 미리 전처리한 구간, node: 시작 노드
+int query(int left, int right, int node, int nodeleft, int noderight)
+{
+	if (right < nodeleft || left > noderight)
+		return 123456789;
+
+	if (left <= nodeleft && noderight <= right)
+		return seg[node];
+
+	int mid = (nodeleft + noderight) / 2;
+	int leftmin = query(left, right, node * 2, nodeleft, mid);
+	int rightmin = query(left, right, node * 2+1, mid+1, noderight);
+
+	return min(leftmin, rightmin);
+}
+
+int update(int index, int newValue, int node, int nodeleft, int noderight)
+{
+	if (index < nodeleft || index > noderight)
+		return seg[node];
+
+	if (nodeleft == noderight)
+		return seg[node] = newValue;
+
+	int mid = (nodeleft + noderight) / 2;
+
+	int leftmin = update(index, newValue, node * 2, nodeleft, mid);
+	int rightmin = update(index, newValue, node * 2 + 1, mid+1, noderight);
+
+	return seg[node] = min(leftmin, rightmin);
+}
+
+int main()
+{
+	init(0, 8, 1);
+	cout << query(2, 6, 1, 0, 8) << endl;
+	update(2, -1, 1, 0, 8);
+	return 0;
+}

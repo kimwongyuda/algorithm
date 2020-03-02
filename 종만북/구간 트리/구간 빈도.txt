@@ -1,0 +1,67 @@
+
+#include <iostream>
+#include <cstdio>
+#include <algorithm>
+#include <iostream>
+#include <string>
+
+using namespace std;
+
+int n=9;
+int arr[9] = { 0,0,1,1,1,1,2,2,2};
+
+struct RangeResult {
+	int size;
+	int mostfreq;
+	int left;
+	int leftfreq;
+	int right;
+	int rightfreq;
+};
+RangeResult seg[36];
+
+//최대 빈도 수 찾기
+RangeResult init(int left, int right, int node)
+{
+	if (left == right)
+	{
+		RangeResult temp;
+		temp.size = 1;
+		temp.mostfreq = 1;
+		temp.left = arr[left];
+		temp.leftfreq = 1;
+		temp.right = arr[right];
+		temp.rightfreq = 1;
+		return seg[node] = temp;
+	}
+
+	RangeResult temp2;
+	int mid = (left + right) / 2;
+
+	RangeResult leftchild = init(left, mid, node * 2);
+	RangeResult rightchild = init(mid + 1, right, node * 2 + 1);
+
+	temp2.size = leftchild.size + rightchild.size;
+	temp2.left = leftchild.left;
+	temp2.right = rightchild.right;
+
+	temp2.leftfreq = leftchild.leftfreq;
+	if (leftchild.size == leftchild.leftfreq && leftchild.right == rightchild.left)
+		temp2.leftfreq += rightchild.leftfreq;
+
+	temp2.rightfreq = rightchild.rightfreq;
+	if (rightchild.size == rightchild.rightfreq && leftchild.right == rightchild.left)
+		temp2.rightfreq += leftchild.rightfreq;
+
+	temp2.mostfreq = max(leftchild.mostfreq, rightchild.mostfreq);
+	if (leftchild.right == rightchild.left)
+		temp2.mostfreq = max(temp2.mostfreq, leftchild.rightfreq + rightchild.leftfreq);
+
+	return seg[node] = temp2;
+}
+
+int main()
+{
+	init(0, 8, 1);
+	return 0;
+}
