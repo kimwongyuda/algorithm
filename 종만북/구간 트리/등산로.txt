@@ -1,0 +1,84 @@
+
+#include <iostream>
+#include <cstdio>
+#include <algorithm>
+#include <iostream>
+#include <string>
+
+using namespace std;
+
+int n=10;
+int arr[10] = { 3, 9, 5, 6, 10, 8, 7, 1, 2, 4};
+
+struct RangeResult {
+	int big;
+	int small;
+};
+RangeResult seg[40];
+
+//최대 빈도 수 찾기
+RangeResult init(int left, int right, int node)
+{
+	if (left == right)
+	{
+		RangeResult temp;
+		temp.big = arr[left];
+		temp.small = arr[right];
+		return seg[node] = temp;
+	}
+
+	RangeResult temp2;
+	int mid = (left + right) / 2;
+
+	RangeResult leftchild = init(left, mid, node * 2);
+	RangeResult rightchild = init(mid + 1, right, node * 2 + 1);
+
+	temp2.big = max(leftchild.big, rightchild.big);
+	temp2.small = min(leftchild.small, rightchild.small);
+
+	return seg[node] = temp2;
+}
+
+RangeResult query(int left, int right, int node, int nodeleft, int noderight)
+{
+	if (left > noderight || right < nodeleft)
+	{
+		RangeResult temp;
+		temp.big = -1;
+		temp.small = -1;
+		return temp;
+	}
+	if (left <= nodeleft && noderight <= right)
+		return seg[node];
+
+	int mid = (nodeleft + noderight) / 2;
+	RangeResult leftchild = query(left, right, node * 2, nodeleft, mid);
+	RangeResult rightchild = query(left, right, node * 2 + 1, mid + 1, noderight);
+
+	RangeResult temp2;
+	if (leftchild.big == -1)
+	{
+		temp2.big = rightchild.big;
+		temp2.small = rightchild.small;
+		return temp2;
+	}
+	if (rightchild.big == -1)
+	{
+		temp2.big = leftchild.big;
+		temp2.small = leftchild.small;
+		return temp2;
+	}
+
+	temp2.big = max(leftchild.big, rightchild.big);
+	temp2.small = min(leftchild.small, rightchild.small);
+	return temp2;
+}
+
+int main()
+{
+	init(0, 9, 1);
+
+	RangeResult res = query(1,6,1,0,9);
+	cout << res.big - res.small << endl;
+	return 0;
+}
