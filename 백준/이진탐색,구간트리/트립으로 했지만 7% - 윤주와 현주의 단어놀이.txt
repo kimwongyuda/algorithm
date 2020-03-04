@@ -1,0 +1,221 @@
+
+
+#include <string>
+#include <vector>
+#include <algorithm>
+#include <iostream>
+#include <map>
+#include <ctime>
+using namespace std;
+
+int N;
+vector<pair<string, int>> sorted;
+
+//이진 검색 트리 + 그나마 균형 맞추는 (선형 구조 피하기 위해) 트립 이용
+struct Node {
+	int key;
+	int priority, size;
+	Node* left, * right;
+
+	Node(int key_)
+	{
+		size = 1;
+		left = NULL;
+		right = NULL;
+		key = key_;
+		priority = rand();
+	}
+
+	void setLeft(Node* newLeft)
+	{
+		left = newLeft;
+		calcSize();
+	}
+
+	void setRight(Node* newRight)
+	{
+		right = newRight;
+		calcSize();
+	}
+
+	void calcSize()
+	{
+		size = 1;
+		if (left)
+			size += left->size;
+		if (right)
+			size += right->size;
+	}
+
+};
+
+pair<Node*, Node*> split_(Node* root, int key)
+{
+	if (root == NULL)
+	{
+		pair<Node*, Node*> ret;
+		ret.first = NULL;
+		ret.second = NULL;
+		return ret;
+	}
+
+	if (root->key < key)
+	{
+		pair<Node*, Node*> rs = split_(root->right, key);
+		root->setRight(rs.first);
+		pair<Node*, Node*> ret;
+		ret.first = root;
+		ret.second = rs.second;
+		return ret;
+	}
+	else
+	{
+		pair<Node*, Node*> ls = split_(root->left, key);
+		root->setLeft(ls.second);
+		pair<Node*, Node*> ret;
+		ret.first = ls.first;
+		ret.second = root;
+		return ret;
+	}
+}
+
+Node* insert(Node* root, Node* node)
+{
+	if (root == NULL)
+		return node;
+
+	if (root->priority < node->priority)
+	{
+		pair<Node*, Node*> splitted = split_(root, node->key);
+		node->setLeft(splitted.first);
+		node->setRight(splitted.second);
+		return node;
+	}
+	else
+	{
+		if (root->key > node->key)
+		{
+			root->setLeft(insert(root->left, node));
+		}
+		else
+		{
+			root->setRight(insert(root->right, node));
+		}
+	}
+
+	return root;
+}
+
+Node* merge(Node* a, Node* b)
+{
+	if (a == NULL) return b;
+	if (b == NULL) return a;
+
+	if (a->priority < b->priority)
+	{
+		b->setLeft(merge(a, b->left));
+		return b;
+	}
+
+	else {
+		a->setRight(merge(a->right, b));
+		return a;
+	}
+}
+
+Node* kth(Node* root, int k)
+{
+	int leftSize = 0;
+	if (root->left != NULL)
+		leftSize = root->left->size;
+	if (k <= leftSize) return kth(root->left, k);
+	else if (k == leftSize + 1) return root;
+	else return kth(root->right, k - leftSize - 1);
+}
+
+int countMoreThan(Node* root, int key)
+{
+	if (root == NULL)
+		return 0;
+	if (root->key <= key)
+		return countMoreThan(root->right, key);
+
+	int rightSize = 0;
+	if (root->right != NULL)
+		rightSize = root->right->size;
+
+	return rightSize + 1 + countMoreThan(root->left, key);
+}
+
+int countLessThan(Node* root, int key)
+{
+	if (root == NULL)
+		return 0;
+	if (root->key >= key)
+		return countLessThan(root->left, key);
+
+	int leftSize = 0;
+	if (root->left != NULL)
+		leftSize = root->left->size;
+
+	return leftSize + 1 + countLessThan(root->right, key);
+}
+
+Node* erase_(Node* root, int key)
+{
+	if (root == NULL)
+		return root;
+
+	if (root->key == key)
+	{
+		Node* ret = merge(root->left, root->right);
+		delete root;
+		return ret;
+	}
+	if (key < root->key)
+		root->setLeft(erase_(root->left, key));
+	else
+		root->setRight(erase_(root->right, key));
+
+	return root;
+}
+
+int main()
+{
+	srand(time(NULL));
+
+	ios_base :: sync_with_stdio(false); 
+	cin.tie(NULL); 
+	cout.tie(NULL);
+
+	scanf_s("%d", &N);
+
+	for (int i = 0; i < N;i++)
+	{
+		string temp;
+		cin >> temp;
+		sorted.push_back(make_pair(temp, 0));
+	}
+
+	sort(sorted.begin(), sorted.end());
+	
+	for (int i = 0; i < N; i++)
+	{
+		sorted[i].second = i;
+		reverse(sorted[i].first.begin(), sorted[i].first.end());
+	}
+
+	sort(sorted.begin(), sorted.end());
+
+	//solve
+	Node* root_ = NULL;
+	int answer = 0;
+	for (int i = 0; i < N; i++)
+	{
+		answer += countMoreThan(root_, sorted[i].second);
+		root_ = insert(root_, new Node(sorted[i].second));
+	}
+
+	printf("%d\n", answer);
+
+}
