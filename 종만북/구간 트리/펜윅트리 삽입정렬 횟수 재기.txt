@@ -1,0 +1,63 @@
+#include <iostream>
+#include <vector>
+
+using namespace std;
+
+int N;
+int A[50000];
+
+struct FenwickTree {
+	vector<int> tree;
+
+	// 1 ~ 999999
+
+	FenwickTree(int n) {
+		//이진수를 위한 + 1 
+		tree.resize(n + 1);
+	}
+
+	int sum(int pos) {
+
+		// 5 1 4 3 2
+		int ret = 0;
+		while (pos > 0)
+		{
+			ret += tree[pos];
+			pos &= (pos - 1);
+		}
+
+		return ret;
+	}
+
+	//pos 자체는 변할 수가 없지만, pos에 대응하는 값은 점차 변함.
+	void add(int pos, int val)
+	{
+		while (pos < tree.size())
+		{
+			tree[pos] += val;
+			pos += ( pos & (-pos) );
+		}
+	}
+};
+
+int main() {
+	
+	scanf_s("%d", &N);
+
+	for (int i = 0; i < N; i++)
+		scanf_s("%d", &A[i]);
+
+	//solve
+	int answer = 0;
+	FenwickTree mytree(999999);
+
+	for (int i = 0; i < N; i++)
+	{
+		answer += mytree.sum(999999) - mytree.sum(A[i]);
+		mytree.add(A[i], 1);
+	}
+
+	printf("%d\n", answer);
+
+	return 0;
+}
