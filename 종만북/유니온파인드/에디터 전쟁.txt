@@ -1,0 +1,170 @@
+
+
+#include <string>
+#include <vector>
+#include <algorithm>
+#include <iostream>
+#include <map>
+#include <ctime>
+using namespace std;
+
+int N;
+int S;
+
+string a1[100000];
+int a2[100000];
+int a3[100000];
+
+struct UnionFind {
+	vector<int> parent;
+	vector<int> enemy;
+	vector<int> size;
+	vector<int> rank;
+
+	UnionFind(int n)
+	{
+		for (int i = 0; i < n; i++)
+			parent.push_back(i);
+
+		enemy.resize(n, -1);
+		size.resize(n, 1);
+		rank.resize(n, 0);
+	}
+
+	int find(int item)
+	{
+		if (parent[item] == item)
+			return item;
+		return parent[item] = find(parent[item]);
+	}
+
+	int merge(int u, int v)
+	{
+
+		if (u == -1 || v == -1)
+			return max(u, v);
+
+		u = find(u);
+		v = find(v);
+
+		if (u == v)
+			return v;
+
+		if (rank[u] > rank[v])
+		{
+			int temp = u;
+			u = v;
+			v = temp;
+		}
+
+		if (rank[u] == rank[v])
+			rank[v]++;
+
+		parent[u] = v;
+		size[v] += size[u];
+
+		return v;
+	}
+
+	bool ack(int u, int v)
+	{
+		u = find(u);
+		v = find(v);
+
+		if (enemy[u] == v)
+			return false;
+
+		int new_root = merge(u, v);
+		int new_root_enemy = merge(enemy[u], enemy[v]);
+
+		enemy[new_root] = new_root_enemy;
+		if (new_root_enemy != -1)
+			enemy[new_root_enemy] = new_root;
+
+		return true;
+	}
+
+	bool dis(int u, int v)
+	{
+		u = find(u);
+		v = find(v);
+
+		if (u == v)
+			return false;
+
+		// u 입장에서
+		int new_root_enemy = merge(enemy[u], v);
+		int new_root = merge(u, enemy[v]);
+
+		enemy[new_root] = new_root_enemy;
+		enemy[new_root_enemy] = new_root;
+		return true;
+	}
+};
+
+int main()
+{
+	ios_base::sync_with_stdio(false); 
+	cin.tie(NULL); 
+	cout.tie(NULL);
+
+	scanf_s("%d", &N);
+	scanf_s("%d", &S);
+
+	for (int i = 0; i < S;i++)
+	{
+		cin >> a1[i];
+		cin >> a2[i];
+		cin >> a3[i];
+	}
+
+	UnionFind uf(N);
+
+	int flag = -1;
+	for (int i = 0; i < S;i++)
+	{
+		bool temp;
+		if (a1[i] == "ACK")
+		{
+			temp = uf.ack(a2[i], a3[i]);
+		}
+		else
+		{
+			temp = uf.dis(a2[i], a3[i]);
+		}
+		if (temp == false)
+			flag = i + 1;
+	}
+
+	if (flag == -1)
+	{
+		//maxparty count
+		int answer = 0;
+
+		for (int i = 0; i < N; i++)
+		{
+			if (i == uf.parent[i])
+			{
+				if (uf.enemy[i] == -1)
+					answer+=uf.size[i];
+				else
+				{
+					int enemy = uf.enemy[i];
+					if (enemy < i)
+						continue;
+					answer += max(uf.size[enemy], uf.size[i]);
+
+				}
+			}
+		}
+
+		printf("MAX PARTY SIZE IS %d\n", answer);
+	}
+	else
+	{
+		printf("CONTRADICTION AT %d\n", flag);
+	}
+
+
+	return 0;
+}
