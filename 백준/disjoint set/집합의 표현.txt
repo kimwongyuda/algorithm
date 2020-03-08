@@ -1,0 +1,113 @@
+
+
+#include <string>
+#include <vector>
+#include <algorithm>
+#include <iostream>
+#include <map>
+#include <ctime>
+using namespace std;
+
+int N;
+int M;
+
+int input1[100001];
+int input2[100001];
+int input3[100001];
+
+struct UnionFind {
+
+	vector<int> parent;
+	vector<int> rank;
+	vector<int> size;
+
+	UnionFind(int n)
+	{
+		for (int i = 0; i < n+1; i++)
+			parent.push_back(i);
+
+		rank.resize(n + 1);
+		size.resize(n + 1, 1);
+	}
+
+	int find(int item)
+	{
+		if (parent[item] == item)
+			return item;
+		return parent[item] = find(parent[item]);
+	}
+
+	int merge(int u, int v)
+	{
+		u = find(u);
+		v = find(v);
+
+		if (u == v)
+			return v;
+
+		if (rank[u] > rank[v])
+		{
+			int temp = u;
+			u = v;
+			v = temp;
+		}
+
+		if (rank[u] == rank[v])
+			rank[v]++;
+
+		parent[u] = v;
+		size[v] += size[u];
+
+		return v;
+	}
+
+	bool isset(int u, int v)
+	{
+		u = find(u);
+		v = find(v);
+
+		if (u == v)
+			return true;
+
+		else
+			return false;
+	}
+};
+
+int main()
+{
+	ios_base::sync_with_stdio(false); 
+	cin.tie(NULL); 
+	cout.tie(NULL);
+
+	scanf_s("%d", &N);
+	scanf_s("%d", &M);
+
+	for (int i = 0; i < M;i++)
+	{
+		scanf_s("%d", &input1[i]);
+		scanf_s("%d", &input2[i]);
+		scanf_s("%d", &input3[i]);
+	}
+
+	UnionFind uf(N);
+
+	for (int i = 0; i < M; i++)
+	{
+		if (input1[i] == 0)
+		{
+			uf.merge(input2[i], input3[i]);
+		}
+		else
+		{
+			bool temp = uf.isset(input2[i], input3[i]);
+			if (temp)
+				printf("YES\n");
+			else
+				printf("NO\n");
+		}
+	}
+
+
+	return 0;
+}

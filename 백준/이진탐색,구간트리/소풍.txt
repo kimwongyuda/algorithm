@@ -1,0 +1,48 @@
+#include <iostream>
+using namespace std;
+
+int main() {
+
+	int N;
+	int K;
+	int M;
+
+	scanf_s("%d %d %d", &N, &K, &M);
+
+	int next = K % N;
+	if (next == 0)
+		next = N;
+
+	int answer = 0;
+
+	while (true)
+	{
+		answer++;
+		
+		if (next == M)
+			break;
+
+		if (M - next > 0)
+		{
+			M -= next;
+			N--;
+
+			next = K % N;
+			if (next == 0)
+				next = N;
+		}
+		else
+		{
+			M -= next;
+			M = M + N;
+			N--;
+
+			next = K % N;
+			if (next == 0)
+				next = N;
+		}
+	}
+
+	printf("%d", answer);
+	return 0;
+}
