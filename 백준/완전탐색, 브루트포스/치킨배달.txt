@@ -1,0 +1,96 @@
+#include <cstdio>
+#include <algorithm>
+#include <iostream>
+#include <string>
+#include <cmath>
+#include <vector>
+
+using namespace std;
+
+int N;
+int M;
+int arr[50][50];
+
+vector<pair<int,int>> chickens;
+vector<int> ind;
+
+int main()
+{
+	scanf_s("%d", &N);
+	scanf_s("%d", &M);
+
+	for (int i = 0; i < N; i++)
+	{
+		for (int j = 0; j < N; j++)
+		{
+			scanf_s("%d", &arr[i][j]);
+		}
+	}
+
+	//치킨 위치 찾기
+	for (int i = 0; i < N; i++)
+	{
+		for (int j = 0; j < N; j++)
+		{
+			if (arr[i][j] == 2)
+				chickens.push_back(make_pair(i, j));
+		}
+	}
+
+	//조합 골라 for문 하기
+	for (int i = 0; i < chickens.size(); i++)
+	{
+		if (i < chickens.size() - M)
+			ind.push_back(0);
+		else
+			ind.push_back(1);
+	}
+
+	int answer = 123456789;
+
+	do {
+
+		int temp = 0;
+
+		//본격적인 맵 조사
+		for (int i = 0; i < N; i++)
+		{
+			for (int j = 0; j < N; j++)
+			{
+				if (arr[i][j] == 0)
+					continue;
+
+				else if (arr[i][j] == 2)
+					continue;
+
+				else 
+				{
+					int dis = 123456789;
+
+					for (int k = 0; k < ind.size(); k++)
+					{
+						if (ind[k] == 1)
+						{
+							int xdis = abs(i - chickens[k].first);
+							int ydis = abs(j - chickens[k].second);
+
+							dis = min(dis, xdis + ydis);
+						}
+					}
+
+					temp += dis;
+				}
+			}
+
+		}
+
+		answer = min(answer, temp);
+
+	} while (next_permutation(ind.begin(), ind.end()));
+
+
+	printf("%d\n", answer);
+
+	return 0;
+}
+
