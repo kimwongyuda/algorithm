@@ -1,0 +1,52 @@
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <cmath>
+#include <string>
+using namespace std;
+
+string input;
+vector<int> number;
+
+bool cmp(int a, int b)
+{
+    return a > b;
+}
+
+int main()
+{
+    std::ios_base::sync_with_stdio(false); 
+    std::cin.tie(NULL); 
+    std::cout.tie(NULL);
+
+    cin >> input;
+
+    for (int i = 0; i < input.size(); i++)
+        number.push_back(input[i] - '0');
+
+    //본격 적으로 시작
+    //0이 없다면
+
+    if (find(number.begin(), number.end(), 0) == number.end())
+    {
+        cout << -1 << '\n';
+        return 0;
+    }
+
+    //3의 배수가 아니라면
+    int total = 0;
+    for (int i = 0; i < number.size(); i++)
+        total += number[i];
+
+    if (total % 3 != 0)
+    {
+        cout << -1 << '\n';
+        return 0;
+    }
+
+    sort(number.begin(), number.end(), cmp);
+    for (int i = 0; i < number.size(); i++)
+        cout << number[i];
+
+    return 0;
+}

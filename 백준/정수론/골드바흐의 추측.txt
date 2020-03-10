@@ -1,0 +1,59 @@
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <cmath>
+using namespace std;
+
+vector<int> numbers;
+bool isPrime[1000000];
+
+int main()
+{
+    for (int i = 0; i < 1000000; i++)
+        isPrime[i] = 1;
+
+    isPrime[0] = 0;
+    isPrime[1] = 0;
+
+    while (true)
+    {
+        int temp;
+        scanf_s("%d", &temp);
+
+        if (temp == 0)
+            break;
+
+        numbers.push_back(temp);
+    }
+
+    //에라토스테네스의 체로 소수 거르기
+    int sqrted = (int)sqrt(1000000);
+
+    for (int i = 2; i <= sqrted; i++)
+    {
+        if (isPrime[i] == 1)
+        {
+            for (int j = i * i; j < 1000000; j += i)
+                isPrime[j] = 0;
+        }
+    }
+
+    //판별 진행
+    for (int i = 0; i < numbers.size(); i++)
+    {
+        bool flag = false;
+        for (int j = 3; j <= numbers[i] / 2; j = j + 2)
+        {
+            if (isPrime[j] == 1 && isPrime[numbers[i] - j] == 1)
+            {
+                printf("%d = %d + %d\n", numbers[i], j, numbers[i] - j);
+                flag = true;
+                break;
+            }
+        }
+        if (!flag)
+            printf("Goldbach's conjecture is wrong.\n");
+    }
+
+    return 0;
+}
