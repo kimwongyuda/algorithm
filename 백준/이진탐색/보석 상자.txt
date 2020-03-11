@@ -1,0 +1,55 @@
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <cmath>
+#include <string>
+using namespace std;
+
+int N;
+int M;
+vector<int> numbers;
+
+int main()
+{
+	scanf_s("%d", &N);
+	scanf_s("%d", &M);
+
+	int low = 1;
+	int high = 0;
+
+	for (int i = 0; i < M; i++)
+	{
+		int temp;
+		scanf_s("%d", &temp);
+		numbers.push_back(temp);
+		high = max(temp, high);
+	}
+
+	int result = 0;
+	while (low <= high)
+	{
+		//추측한 최댓값
+		int mid = (low + high) / 2;
+		int flag = 0;
+
+		for (int i = 0; i < M; i++)
+		{
+			flag += numbers[i] / mid;
+			if (numbers[i] % mid > 0)
+				flag += 1;
+		}
+
+		if (flag <= N)
+		{
+			high = mid - 1;
+			result = mid;
+		}
+		else
+		{
+			low = mid + 1;
+		}
+	}
+
+	printf("%d\n", result);
+	return 0;
+}

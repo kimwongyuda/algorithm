@@ -1,0 +1,59 @@
+#include <iostream>
+#include <algorithm>
+#include <vector>
+
+using namespace std;
+
+int N;
+int C;
+
+vector<int> shares;
+
+int main()
+{
+	scanf_s("%d", &N);
+	scanf_s("%d", &C);
+
+	for (int i = 0; i < N; i++)
+	{
+		int temp;
+		scanf_s("%d", &temp);
+		shares.push_back(temp);
+	}
+
+	sort(shares.begin(), shares.end());
+
+	int low = 1;
+	int high = shares[N - 1] - shares[0];
+
+	int result = 0;
+	while (low <= high)
+	{
+		int mid = (low + high) / 2;
+
+		int cnt = 1;
+		int prev = shares[0];
+		for (int i = 1; i < N; i++)
+		{
+			if (shares[i] - prev >= mid)
+			{
+				cnt++;
+				prev = shares[i];
+			}
+		}
+
+		if (cnt >= C)
+		{
+			result = mid;
+			low = mid + 1;
+		}
+		else
+		{
+			high = mid - 1;
+		}
+	}
+
+	printf("%d\n", result);
+
+	return 0;
+}
