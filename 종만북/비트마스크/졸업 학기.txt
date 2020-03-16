@@ -1,0 +1,100 @@
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <queue>
+
+using namespace std;
+
+int N, K, M, L;
+int pre[12];
+int classes[10];
+int cache[10][1 << 12];
+
+int inf = 123456789;
+
+int bitCount(int n)
+{
+	if (n == 0)
+		return 0;
+
+	return n % 2 + bitCount(n / 2);
+}
+
+int solve(int semester, int taken)
+{
+	if (bitCount(taken) >= K)
+		return 0;
+
+	if (semester == M)
+		return inf;
+
+	int& ret = cache[semester][taken];
+
+	if (ret != -1)
+		return ret;
+
+	ret = inf;
+
+	int cantake = (classes[semester] & ~taken);
+
+	for (int i = 0; i < N; i++)
+	{
+		if ((cantake & (1 << i)) && (taken & pre[i]) != pre[i])
+		{
+			cantake &= ~(1 << i);
+		}
+	}
+
+	for (int take = cantake; take > 0; take = ((take - 1) & cantake))
+	{
+		if (bitCount(take) > L)
+			continue;
+
+		ret = min(ret, solve(semester + 1, take | taken) + 1);
+	}
+
+	ret = min(ret, solve(semester + 1, taken));
+
+	return ret;
+}
+
+int main()
+{
+	//입력 및 초기화
+	memset(cache, -1, sizeof(cache));
+	
+	scanf_s("%d %d %d %d", &N, &K, &M, &L);
+	
+
+	for (int i = 0; i < N; i++)
+	{
+		int temp = 0;
+		scanf_s("%d", &temp);
+
+		for (int j = 0; j < temp; j++)
+		{
+			int temp3 = 0;
+			scanf_s("%d", &temp3);
+			pre[i] |= 1 << temp3;
+		}
+	}
+
+	for (int i = 0; i < M; i++)
+	{
+		int temp = 0;
+		scanf_s("%d", &temp);
+
+		for (int j = 0; j < temp; j++)
+		{
+			int temp3 = 0;
+			scanf_s("%d", &temp3);
+			classes[i] |= 1 << temp3;
+		}
+
+	}
+
+	//solve
+	printf("%d\n", solve(0, 0));
+
+	return 0;
+}
