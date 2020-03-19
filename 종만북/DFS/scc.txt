@@ -1,0 +1,79 @@
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <queue>
+#include <stack>
+
+using namespace std;
+
+//scc 찾기 in 유향 (무향은 교차 간선 없음)
+//0 1
+//0 4
+//1 2
+//2 3
+//3 1
+//4 5
+//5 3
+
+//인접 리스트
+vector<vector<int>> adj(6);
+vector<int> discovered(6, -1);
+vector<int> sccid(6, -1);
+stack<int> st;
+int count_ = 0, stcount_ = 0;
+
+int dfs(int here)
+{
+	int ret = discovered[here] = count_++;
+
+	st.push(here);
+
+	for (int i = 0; i < adj[here].size(); i++)
+	{
+		int there = adj[here][i];
+		
+		if (discovered[there] == -1)
+			ret = min(ret, dfs(there));
+
+		else if (sccid[there] == -1)
+			ret = min(ret, discovered[there]);
+	}
+
+	if (ret == discovered[here])
+	{
+		while (true)
+		{
+			int t = st.top();
+			st.pop();
+			sccid[t] = stcount_;
+			if (t == here)
+				break;
+		}
+		stcount_++;
+	}
+
+	return ret;
+}
+
+int main()
+{
+	//입력 초기화
+	adj[0].push_back(1);
+	adj[0].push_back(4);
+	adj[1].push_back(2);
+	adj[2].push_back(3);
+	adj[3].push_back(1);
+	adj[4].push_back(5);
+	adj[5].push_back(3);
+	adj[5].push_back(4);
+
+	//여기서는 누적 가능
+	for (int i = 0; i < adj.size(); i++)
+	{
+		if (discovered[i] == -1)
+			dfs(i);
+	}
+
+
+	return 0;
+}
