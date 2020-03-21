@@ -1,0 +1,128 @@
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <string>
+
+using namespace std;
+
+int N;
+
+//R 0, G 1, B 2
+int arr[101][101];
+vector<vector<bool>> visited(101, vector<bool>(101));
+int count_ = 0;
+
+void dfs(int x, int y)
+{
+	visited[x][y] = true;
+
+	//북 쪽
+	if (x != 0)
+	{
+		if (!visited[x - 1][y])
+		{
+			if (arr[x - 1][y] == arr[x][y])
+				dfs(x - 1, y);
+		}
+	}
+
+	//동 쪽
+	if (y != N - 1)
+	{
+		if (!visited[x][y + 1])
+		{
+			if (arr[x][y + 1] == arr[x][y])
+				dfs(x, y + 1);
+		}
+	}
+
+	//남 쪽
+	if (x != N - 1)
+	{
+		if (!visited[x + 1][y])
+		{
+			if (arr[x + 1][y] == arr[x][y])
+				dfs(x + 1, y);
+		}
+	}
+
+	//서 쪽
+	if (y != 0)
+	{
+		if (!visited[x][y - 1])
+		{
+			if (arr[x][y - 1] == arr[x][y])
+				dfs(x, y - 1);
+		}
+	}
+}
+
+int main()
+{
+	ios_base::sync_with_stdio(false);
+	cin.tie(NULL);
+	cout.tie(NULL);
+
+	cin >> N;
+
+	//input 및 초기화
+	for (int i = 0; i < N; i++)
+	{
+		string temp;
+		cin >> temp;
+		for (int j = 0; j < N; j++)
+		{
+			if (temp[j] == 'R')
+				arr[i][j] = 0;
+			else if (temp[j] == 'G')
+				arr[i][j] = 1;
+			else
+				arr[i][j] = 2;
+		}
+	}
+
+	//색약 아닌 사람이 먼저 봤을 때
+	for (int i = 0; i < N; i++)
+	{
+		for (int j = 0; j < N; j++)
+		{
+			if (!visited[i][j])
+			{
+				dfs(i, j);
+				count_++;
+			}
+		}
+	}
+
+	printf("%d ", count_);
+
+	//색약이 봤을 때
+	visited.clear();
+	visited.resize(101, vector<bool>(101));
+	count_ = 0;
+
+	for (int i = 0; i < N; i++)
+	{
+		for (int j = 0; j < N; j++)
+		{
+			if (arr[i][j] == 1)
+				arr[i][j] = 0;
+		}
+	}
+
+	for (int i = 0; i < N; i++)
+	{
+		for (int j = 0; j < N; j++)
+		{
+			if (!visited[i][j])
+			{
+				dfs(i, j);
+				count_++;
+			}
+		}
+	}
+
+	printf("%d\n", count_);
+
+	return 0;
+}
