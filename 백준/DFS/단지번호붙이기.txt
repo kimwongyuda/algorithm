@@ -1,0 +1,86 @@
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <string>
+
+using namespace std;
+
+int N;
+
+int dx[4] = { 0, 0, 1, -1 }; //동 서 남 북
+int dy[4] = { 1, -1, 0, 0 }; //동 서 남 북
+
+int vertexs[26][26];
+bool visited[26][26];
+
+int count_ = 0;
+vector<int> home_count;
+
+int dfs(int x, int y)
+{
+	visited[x][y] = true;
+
+	int homes = 1;
+
+	for (int i = 0; i < 4; i++)
+	{
+		int nx = x + dx[i];
+		int ny = y + dy[i];
+
+		if (nx < 0 || nx > N - 1 || ny < 0 || ny > N - 1)
+			continue;
+
+		if (!visited[nx][ny] && vertexs[nx][ny] == vertexs[x][y])
+			homes += dfs(nx, ny);
+	}
+
+	return homes;
+}
+
+int main()
+{
+	ios_base::sync_with_stdio(false);
+	cin.tie(NULL);
+	cout.tie(NULL);
+
+	cin >> N;
+
+	//input 및 초기화
+	for (int i = 0; i < N; i++)
+	{
+		string temp;
+		cin >> temp;
+
+		for (int j = 0; j < N; j++)
+		{
+
+			vertexs[i][j] = temp[j] - '0';
+		}
+	}
+
+	for (int i = 0; i < N; i++)
+	{
+		for (int j = 0; j < N; j++)
+		{
+			if (!visited[i][j])
+			{
+				int temp = dfs(i, j);
+				if (vertexs[i][j] != 0)
+				{
+					count_++;
+					home_count.push_back(temp);
+				}
+			}
+		}
+	}
+
+	printf("%d\n", count_);
+
+	sort(home_count.begin(), home_count.end());
+	for (int i = 0; i < home_count.size(); i++)
+	{
+		printf("%d\n", home_count[i]);
+	}
+
+	return 0;
+}
