@@ -1,0 +1,89 @@
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <string>
+
+using namespace std;
+
+int N[100];
+int M[100];
+int K[100];
+int T;
+
+int dx[4] = { 0, 0, 1, -1 }; //동 서 남 북
+int dy[4] = { 1, -1, 0, 0 }; //동 서 남 북
+
+int vertices[100][50][50];
+bool visited[100][50][50];
+
+int count_ = 0;
+vector<pair<int, int>> points[100];
+
+int dfs(int x, int y, int a)
+{
+	visited[a][x][y] = true;
+
+	int homes = 1;
+
+	for (int i = 0; i < 4; i++)
+	{
+		int nx = x + dx[i];
+		int ny = y + dy[i];
+
+		if (nx < 0 || nx > N[a] - 1 || ny < 0 || ny > M[a] - 1)
+			continue;
+
+		if (!visited[a][nx][ny] && vertices[a][nx][ny] == vertices[a][x][y])
+			homes += dfs(nx, ny, a);
+	}
+
+	return homes;
+}
+
+int main()
+{
+	//ios_base::sync_with_stdio(false);
+	//cin.tie(NULL);
+	//cout.tie(NULL);
+
+	scanf_s("%d", &T);
+	for (int a = 0; a < T; a++)
+	{
+		scanf_s("%d", &M[a]);
+		scanf_s("%d", &N[a]);
+		scanf_s("%d", &K[a]);
+
+		for (int i = 0; i < K[a]; i++)
+		{
+			pair<int, int> temp;
+			scanf_s("%d %d", &temp.second, &temp.first);
+			points[a].push_back(temp);
+		}
+
+		for (int i = 0; i < K[a]; i++)
+			vertices[a][points[a][i].first][points[a][i].second] = 1;
+	}
+
+	for (int a = 0; a < T; a++)
+	{
+		count_ = 0;
+		for (int i = 0; i < N[a]; i++)
+		{
+			for (int j = 0; j < M[a]; j++)
+			{
+				if (!visited[a][i][j])
+				{
+					int temp = dfs(i, j, a);
+					if (vertices[a][i][j] != 0)
+					{
+						count_++;
+					}
+				}
+			}
+		}
+
+		printf("%d\n", count_);
+	}
+
+
+}
