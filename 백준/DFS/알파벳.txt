@@ -1,0 +1,67 @@
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <list>
+#include <string>
+#include <map>
+#include <queue>>
+
+using namespace std;
+
+int R;
+int C;
+
+char arr[21][21];
+bool visited[26];
+
+int dx[4] = { 0, 1, 0, -1 }; // 동 남 서 북
+int dy[4] = { 1, 0, -1, 0 };
+
+int dfs(int x, int y)
+{
+	visited[arr[x][y] - 'A'] = true;
+
+	int ret = 1;
+
+	for (int i = 0; i < 4; i++)
+	{
+		int nx = x + dx[i];
+		int ny = y + dy[i];
+
+		if (nx < 0 || nx > R - 1 || ny < 0 || ny > C - 1)
+			continue;
+
+		if (!visited[arr[nx][ny] - 'A'])
+		{
+			ret = max(ret, 1 + dfs(nx, ny));
+		}
+	}
+
+	visited[arr[x][y] - 'A'] = false;
+
+	return ret;
+}
+
+int main()
+{
+	ios_base::sync_with_stdio(false);
+	cin.tie(NULL);
+	cout.tie(NULL);
+
+	cin >> R;
+	cin >> C;
+
+	for (int i = 0; i < R; i++)
+	{
+		string temp;
+		cin >> temp;
+		for (int j = 0; j < temp.size(); j++)
+		{
+			arr[i][j] = temp[j];
+		}
+	}
+
+	cout << dfs(0, 0) << '\n';
+
+	return 0;
+}

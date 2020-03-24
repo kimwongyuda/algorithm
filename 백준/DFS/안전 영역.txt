@@ -1,0 +1,92 @@
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <string>
+
+using namespace std;
+
+int N;
+
+int dx[4] = { 0, 0, 1, -1 }; //동 서 남 북
+int dy[4] = { 1, -1, 0, 0 }; //동 서 남 북
+
+int vertices[100][100];
+bool visited[100][100];
+
+int count_ = 0;
+
+int dfs(int x, int y, int h)
+{
+	visited[x][y] = true;
+
+	if (vertices[x][y] <= h)
+		return 0;
+
+	int homes = 1;
+
+	for (int i = 0; i < 4; i++)
+	{
+		int nx = x + dx[i];
+		int ny = y + dy[i];
+
+		if (nx < 0 || nx > N - 1 || ny < 0 || ny > N - 1)
+			continue;
+
+		if (!visited[nx][ny] && vertices[nx][ny] > h)
+			homes += dfs(nx, ny, h);
+	}
+
+	return homes;
+}
+
+int main()
+{
+	//ios_base::sync_with_stdio(false);
+	//cin.tie(NULL);
+	//cout.tie(NULL);
+
+	scanf("%d", &N);
+
+	int maxh = 0;
+
+	for (int i = 0; i < N; i++)
+	{
+		for (int j = 0; j < N; j++)
+		{
+			scanf("%d", &vertices[i][j]);
+			maxh = max(vertices[i][j], maxh);
+		}
+	}
+
+	int answer = 0;
+
+	for (int k = 0; k <= maxh; k++)
+	{
+		count_ = 0;
+		for (int i = 0; i < N; i++)
+		{
+			for (int j = 0; j < N; j++)
+			{
+				visited[i][j] = false;
+			}
+		}
+
+
+		for (int i = 0; i < N; i++)
+		{
+			for (int j = 0; j < N; j++)
+			{
+				if (!visited[i][j])
+				{
+					dfs(i, j, k);
+					if (vertices[i][j] > k)
+						count_++;
+				}
+			}
+		}
+
+		answer = max(answer, count_);
+	}
+
+	printf("%d\n", answer);
+}
