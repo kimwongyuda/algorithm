@@ -1,0 +1,103 @@
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <list>
+#include <string>
+#include <map>
+#include <queue>>
+
+using namespace std;
+
+int K;
+int V[5];
+int E[5];
+
+vector<int> nodecolor[5];
+vector<vector<int>> adj[5];
+
+int cur_case = 0;
+
+bool dfs(int here, int color)
+{
+	nodecolor[cur_case][here] = color;
+
+	bool ret = true;
+
+	int ncolor = 0;
+
+	if (color == 1)
+		ncolor = 2;
+	else
+		ncolor = 1;
+
+	for (int i = 0; i < adj[cur_case][here].size(); i++)
+	{
+		int there = adj[cur_case][here][i];
+
+		if (nodecolor[cur_case][there] == 0)
+		{
+			ret = dfs(there, ncolor);
+			if (!ret)
+				break;
+		}
+		else
+		{
+			if (nodecolor[cur_case][there] == color)
+			{
+				ret = false;
+				break;
+			}
+		}
+	}
+
+	return ret;
+}
+
+int main()
+{
+	scanf_s("%d", &K);
+
+	for (int i = 0; i < K; i++)
+	{
+		scanf_s("%d", &V[i]);
+		scanf_s("%d", &E[i]);
+
+		adj[i].resize(V[i], vector<int>());
+		nodecolor[i].resize(V[i], 0);
+
+		for (int j = 0; j < E[i]; j++)
+		{
+			int temp1 = 0;
+			int temp2 = 0;
+
+			scanf_s("%d", &temp1);
+			scanf_s("%d", &temp2);
+
+			adj[i][temp1 - 1].push_back(temp2 - 1);
+			adj[i][temp2 - 1].push_back(temp1 - 1);
+		}
+	}
+
+	for (int i = 0; i < K; i++)
+	{
+		cur_case = i;
+		bool flag = true;
+
+		for (int j = 0; j < V[i]; j++)
+		{
+			if (nodecolor[i][j] == 0)
+			{
+				if (!dfs(j, 1))
+				{
+					printf("NO\n");
+					flag = false;
+					break;
+				}
+			}
+		}
+
+		if (flag)
+			printf("YES\n");
+	}
+	return 0;
+}
