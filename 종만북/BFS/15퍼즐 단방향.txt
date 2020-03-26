@@ -1,0 +1,183 @@
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <list>
+#include <string>
+#include <map>
+#include <queue>>
+
+using namespace std;
+
+class State {
+
+public:
+	
+	long long mystate;
+	long long blank_location;
+
+	State(long long state) {
+		mystate = state;
+
+		long long temp = 15;
+		for (long long i = 0; i < 16; i++)
+		{
+			//0이 맨 마지막 위치
+			long long computed = (temp << (i * 4)) & mystate;
+			if (computed == 0)
+			{
+				blank_location = 15 - i;
+				break;
+			}
+		}
+	}
+
+	bool operator < (const State& cmp) {
+		if (this->mystate < cmp.mystate)
+			return true;
+		else
+			return false;
+	}
+
+	bool operator == (const State& cmp) {
+		if (this->mystate == cmp.mystate)
+			return true;
+		else
+			return false;
+	}
+};
+
+long long numbers[2][16] = { {7, 8, 4, 1, 2, 3, 0, 5, 6, 9, 10, 11, 12, 13, 14, 15}, {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 0} };
+map<State, int> StateMap;
+
+int bfs(State start, State finish)
+{
+	if (start == finish)
+		return 0;
+
+	queue<State> q;
+	q.push(start);
+	StateMap[start] = 0;
+
+	while (!q.empty())
+	{
+
+		State here = q.front();
+		q.pop();
+
+		int cost = StateMap[here];
+		
+		long long blank_location = here.blank_location;
+		long long mystate = here.mystate;
+
+		//그래프 만들기
+		//북쪽
+		if (blank_location > 4)
+		{
+			long long ni = 15 - (blank_location - 4);
+			long long nstate = mystate;
+			long long tempnum = 15;
+			long long number = mystate & (tempnum << (ni * 4));
+			nstate &= ~number;
+			number = number >> 4 * 4;
+			nstate |= number;
+
+			State temp(nstate);
+			if (StateMap.count(temp) == 0)
+			{
+				if (temp == finish)
+					return cost + 1;
+				StateMap[temp] = cost + 1;
+				q.push(temp);
+			}
+		}
+
+		//남쪽
+		if (blank_location < 12)
+		{
+			long long ni = 15 - (blank_location + 4);
+			long long nstate = mystate;
+			long long tempnum = 15;
+			long long number = mystate & (tempnum << (ni * 4));
+			nstate &= ~number;
+			number = number << 4 * 4;
+			nstate |= number;
+
+			State temp(nstate);
+			if (StateMap.count(temp) == 0)
+			{
+				if (temp == finish)
+					return cost + 1;
+				StateMap[temp] = cost + 1;
+				q.push(temp);
+			}
+		}
+
+		//동쪽
+		if (blank_location % 4 != 3)
+		{
+			long long ni = 15 - (blank_location + 1);
+			long long nstate = mystate;
+			long long tempnum = 15;
+			long long number = mystate & (tempnum << (ni * 4));
+			nstate &= ~number;
+			number = number << 4 * 1;
+			nstate |= number;
+
+			State temp(nstate);
+			if (StateMap.count(temp) == 0)
+			{
+				if (temp == finish)
+					return cost + 1;
+				StateMap[temp] = cost + 1;
+				q.push(temp);
+			}
+		}
+
+		//서쪽
+		if (blank_location % 4 != 0)
+		{
+			long long ni = 15 - (blank_location - 1);
+			long long nstate = mystate;
+			long long tempnum = 15;
+			long long number = mystate & (tempnum << (ni * 4));
+			nstate &= ~number;
+			number = number >> 4 * 1;
+			nstate |= number;
+
+			State temp(nstate);
+			if (StateMap.count(temp) == 0)
+			{
+				if (temp == finish)
+					return cost + 1;
+				StateMap[temp] = cost + 1;
+				q.push(temp);
+			}
+		}
+	}
+
+	return -1;
+}
+
+int main()
+{
+	//ios_base::sync_with_stdio(false);
+	//cin.tie(NULL);
+	//cout.tie(NULL);
+
+	//처음 인풋
+	long long number1 = 0;
+	long long number2 = 0;
+
+	for (int i = 0; i < 16; i++)
+	{
+		number1 |= (numbers[0][i] << ((15 - i) * 4));
+		number2 |= (numbers[1][i] << ((15 - i) * 4));
+	}
+
+	State src(number1);
+	State dst(number2);
+
+	printf("%d\n", bfs(src, dst));
+
+	return 0;
+}
