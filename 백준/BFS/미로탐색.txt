@@ -1,0 +1,87 @@
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <list>
+#include <string>
+#include <map>
+#include <queue>>
+
+using namespace std;
+
+int N;
+int M;
+
+struct point {
+	int x;
+	int y;
+	int num;
+};
+
+point arr[100][100];
+
+int dx[4] = { 0, 1, 0, -1 };
+int dy[4] = { 1, 0, -1, 0 };
+
+int discovered[100][100];
+
+int main()
+{
+	ios_base::sync_with_stdio(false);
+	cin.tie(NULL);
+	cout.tie(NULL);
+
+	cin >> N >> M;
+	for (int i = 0; i < N; i++)
+	{
+		string temp;
+		cin >> temp;
+
+		for (int j = 0; j < M; j++)
+		{
+			arr[i][j].num = temp[j] - '0';
+			arr[i][j].x = i;
+			arr[i][j].y = j;
+		}
+	}
+
+	//bfs 시작
+	int answer = 0;
+
+	point start = arr[0][0];
+	point end = arr[N - 1][M - 1];
+	queue<point> q;
+	q.push(start);
+	discovered[0][0] = 1;
+
+	while (!q.empty())
+	{
+		point here = q.front();
+		q.pop();
+
+		if (here.x == end.x && here.y == end.y)
+		{
+			answer = discovered[here.x][here.y];
+			break;
+		}
+
+		for (int i = 0; i < 4; i++)
+		{
+			int nx = here.x + dx[i];
+			int ny = here.y + dy[i];
+
+			if (nx <0 || nx > N - 1 || ny <0 || ny> M - 1)
+				continue;
+
+			if (discovered[nx][ny] == 0 && arr[nx][ny].num == 1)
+			{
+				q.push(arr[nx][ny]);
+				discovered[nx][ny] = discovered[here.x][here.y] + 1;
+			}
+		}
+	}
+
+	printf("%d\n", answer);
+
+
+	return 0;
+}
