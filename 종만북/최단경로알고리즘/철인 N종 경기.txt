@@ -1,0 +1,112 @@
+#include <queue>
+#include <iostream>
+
+using namespace std;
+
+int M;
+
+//가중치, 정점
+vector<vector<pair<int, int>>> adj;
+vector<int> dist;
+
+vector<pair<int, int>> works;
+
+int vertex(int delta)
+{
+    return delta + 199;
+}
+
+int main() 
+{
+    scanf_s("%d", &M);
+
+    //
+    bool flag = false;
+    bool iscon = false;
+    for (int i = 0; i < M; i++)
+    {
+        int a, b;
+        scanf_s("%d %d", &a, &b);
+        works.push_back(make_pair(a, b));
+
+        bool temp = false;
+        if (a - b > 0)
+            temp = true;
+
+        if (i == 0)
+            flag = temp;
+        else
+        { 
+            if (flag != temp)
+                iscon = true;
+        }
+    }
+
+    if (!iscon)
+    {
+        printf("IMPOSSIBLE\n");
+        return 0;
+    }
+
+    //그래프 만들기
+    //399는 start의 0, 199는 종착점의 0
+    int start_ = 399;
+    adj.resize(400, vector<pair<int, int>>());
+    dist.resize(400, 123456789);
+
+    //시작점만
+    for (int i = 0; i < M; i++)
+    {
+        int delta = works[i].first - works[i].second;
+        adj[start_].push_back(make_pair(works[i].first, vertex(delta)));
+    }
+
+    //나머지 그래프
+    for (int delta = -199; delta <= 199; delta++)
+    {
+        for (int i = 0; i < M; i++)
+        {
+            int next = delta + works[i].first - works[i].second;
+            if (abs(next) > 199)
+                continue;
+
+            adj[vertex(delta)].push_back(make_pair(works[i].first, vertex(next)));
+        }
+
+    }
+
+    priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
+    pq.push(make_pair(0, 399));
+    dist[399] = 0;
+
+    while (!pq.empty())
+    {
+        int cost = pq.top().first;
+        int here = pq.top().second;
+
+        pq.pop();
+
+        if (dist[here] < cost)
+            continue;
+
+        for (int i = 0; i < adj[here].size(); i++)
+        {
+            int there = adj[here][i].second;
+            int ncost = adj[here][i].first + cost;
+
+            if (dist[there] > ncost)
+            {
+                pq.push(make_pair(ncost, there));
+                dist[there] = ncost;
+            }
+        }
+    }
+
+    int answer = 0;
+    answer = dist[199];
+
+    printf("%d\n", answer);
+
+
+    return 0;
+}
