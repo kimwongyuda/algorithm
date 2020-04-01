@@ -1,0 +1,119 @@
+#include <queue>
+#include <iostream>
+#include <string>
+#include <algorithm>
+
+using namespace std;
+
+int N;
+int M;
+
+int arr[1000][1000];
+int dist[1000][1000][2];
+
+int dx[4] = { 0,1,0,-1 };
+int dy[4] = { 1,0,-1,0 };
+
+struct Block {
+    int x;
+    int y;
+    int b;
+};
+
+int main() 
+{
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+    cout.tie(NULL);
+
+    cin >> N;
+    cin >> M;
+    for (int i = 0; i < N; i++)
+    {
+        string temp;
+        cin >> temp;
+        for (int j = 0; j < M; j++)
+        {
+            arr[i][j] = temp[j] - '0';
+        }
+    }
+
+    for (int i = 0; i < N; i++)
+    {
+        for (int j = 0; j < M; j++)
+        {
+            for (int k = 0; k < 2; k++)
+                dist[i][j][k] = -1;
+        }
+    }
+
+    queue<Block> q;
+    Block start;
+    start.x = 0;
+    start.y = 0;
+    start.b = 0;
+
+    Block end;
+    end.x = N - 1;
+    end.y = M - 1;
+
+    q.push(start);
+
+    dist[0][0][0] = 0;
+    dist[0][0][1] = 0;
+
+    int answer = -1;
+
+    while(!q.empty())
+    { 
+        int x = q.front().x;
+        int y = q.front().y;
+        int b = q.front().b;
+        q.pop();
+
+        if (x == end.x && y == end.y)
+        {
+            answer = dist[x][y][b];
+            break;
+        }
+
+        for (int i = 0; i < 4; i++)
+        {
+            int nx = x + dx[i];
+            int ny = y + dy[i];
+
+            if (nx < 0 || nx > N - 1 || ny < 0 || ny > M - 1)
+                continue;
+
+            if (arr[nx][ny] == 1 && b == 0)
+            {
+                if (dist[nx][ny][b + 1] == -1)
+                {
+                    Block temp;
+                    temp.x = nx;
+                    temp.y = ny;
+                    temp.b = b + 1;
+                    q.push(temp);
+                    dist[nx][ny][b + 1] = dist[x][y][b] + 1;
+                }
+            }
+            else if(arr[nx][ny] == 0)
+            {
+                if (dist[nx][ny][b] == -1)
+                {
+                    Block temp;
+                    temp.x = nx;
+                    temp.y = ny;
+                    temp.b = b;
+                    q.push(temp);
+                    dist[nx][ny][b] = dist[x][y][b] + 1;
+                }
+            }
+        }
+    }
+    if (answer == -1)
+        answer = -2;
+    printf("%d\n", answer + 1);
+
+    return 0;
+}
