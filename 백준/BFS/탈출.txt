@@ -1,0 +1,146 @@
+#include <queue>
+#include <iostream>
+#include <algorithm>
+
+using namespace std;
+
+int R;
+int C;
+
+int dx[4] = { 0,1,0,-1 };
+int dy[4] = { 1,0,-1,0 };
+
+char arr[51][51];
+
+pair<int, int> start_;
+pair<int, int> end_;
+
+vector<pair<int, int>> waters;
+
+//물 0, 고슴도치 1
+int dist[2][50][50];
+
+int main()
+{
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+    cout.tie(NULL);
+
+    //입력
+    cin >> R >> C;
+
+    for (int k = 0; k < 2; k++)
+    {
+        for (int i = 0; i < R; i++)
+        {
+            for (int j = 0; j < C; j++)
+            {
+                dist[k][i][j] = -1;
+            }
+        }
+    }
+
+    for (int i = 0; i < R; i++)
+    {
+        string temp;
+        cin >> temp;
+        for (int j = 0; j < C; j++)
+        {
+            arr[i][j] = temp[j];
+            if (arr[i][j] == 'D')
+            {
+                end_.first = i;
+                end_.second = j;
+            }
+            if (arr[i][j] == 'S')
+            {
+                start_.first = i;
+                start_.second = j;
+            }
+            if (arr[i][j] == '*')
+            {
+                waters.push_back(make_pair(i, j));
+            }
+        }
+    }
+
+    queue<pair<int, int>> q;
+
+    //물부터
+    for (int i = 0; i < waters.size(); i++)
+    {
+        q.push(waters[i]);
+        dist[0][waters[i].first][waters[i].second] = 0;
+    }
+
+    while (!q.empty())
+    {
+        int x = q.front().first;
+        int y = q.front().second;
+        int cost = dist[0][x][y];
+        q.pop();
+
+        for (int i = 0; i < 4; i++)
+        {
+            int nx = x + dx[i];
+            int ny = y + dy[i];
+
+            if (nx < 0 || nx > R - 1 || ny <0 || ny > C - 1)
+                continue;
+
+            if (dist[0][nx][ny] == -1)
+            {
+                if (arr[nx][ny] != 'D' && arr[nx][ny] != 'X')
+                {
+                    dist[0][nx][ny] = cost + 1;
+                    q.push(make_pair(nx, ny));
+                }
+            }
+        }
+    }
+
+    //고슴도치
+    q.push(start_);
+    dist[1][start_.first][start_.second] = 0;
+
+    int answer = -1;
+
+    while (!q.empty())
+    {
+        int x = q.front().first;
+        int y = q.front().second;
+        int cost = dist[1][x][y];
+        q.pop();
+
+        if (x == end_.first && y == end_.second)
+        {
+            answer = cost;
+            break;
+        }
+
+        for (int i = 0; i < 4; i++)
+        {
+            int nx = x + dx[i];
+            int ny = y + dy[i];
+
+            if (nx < 0 || nx > R - 1 || ny <0 || ny > C - 1)
+                continue;
+
+            if (dist[1][nx][ny] == -1)
+            {
+                if ((dist[0][nx][ny] - 1 > cost || dist[0][nx][ny] == -1) && arr[nx][ny] != 'X')
+                {
+                    dist[1][nx][ny] = cost + 1;
+                    q.push(make_pair(nx, ny));
+                }
+            }
+        }
+    }
+
+    if (answer == -1)
+        printf("KAKTUS\n");
+    else
+        printf("%d\n", answer);
+
+    return 0;
+}
