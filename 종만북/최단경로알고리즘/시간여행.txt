@@ -1,0 +1,57 @@
+#include <queue>
+#include <iostream>
+#include <algorithm>
+
+using namespace std;
+
+int G;
+int W;
+
+//가중치, 정점
+vector<vector<pair<int, int>>> adj;
+bool reachable[100][100];
+int INF = 123456789;
+vector<int> upper(100, INF);
+
+int main() 
+{
+    scanf_s("%d", &G);
+    scanf_s("%d", &W);
+
+    for (int i = 0; i < W; i++)
+    {
+        int a, b, c;
+        scanf_s("%d %d %d", &a, &b, &c);
+        adj[a].push_back(make_pair(c, b));
+    }
+
+    int src = 0;
+    int dst = 1;
+    upper[src] = 0;
+
+    //V-1번 순회 = upper만 업데이트 O(VE)
+    for (int iter = 0; iter < G - 1; iter++)
+    {
+        for (int here = 0; here < G; here++)
+        {
+            for (int i = 0; i < adj[here].size(); i++)
+            {
+                int there = adj[here][i].second;
+                int cost = adj[here][i].first;
+                upper[there] = min(upper[there], upper[here] + cost);
+            }
+        }
+    }
+
+    //reachable 업데이트
+    for (int i = 0; i < G; i++)
+    {
+        if (upper[i] < INF - 1000000)
+        {
+            reachable[src]
+        }
+    }
+
+
+    return 0;
+}

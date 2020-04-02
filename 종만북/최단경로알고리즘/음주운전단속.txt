@@ -1,0 +1,125 @@
+#include <queue>
+#include <iostream>
+#include <string>
+#include <algorithm>
+
+using namespace std;
+
+int V, E;
+int adj[500][500];
+int delay[500];
+
+int W[500][500];
+int via[500][500];
+
+int INF = 123456789;
+
+void reconstruct(int u, int v, vector<int>& path)
+{
+    if (via[u][v] == -1)
+    {
+        path.push_back(u);
+        if (u != v)
+            path.push_back(v);
+    }
+    else
+    {
+        int w = via[u][v];
+        reconstruct(u, w, path);
+        path.pop_back();
+        reconstruct(w, v, path);
+    }
+}
+
+int main() 
+{
+    scanf_s("%d %d", &V, &E);
+    for (int i = 0; i < V; i++)
+    {
+        int temp;
+        scanf_s("%d", &temp);
+        delay[i] = temp;
+    }
+
+    for (int i = 0; i < V; i++)
+    {
+        for (int j = 0; j < V; j++)
+            via[i][j] = -1;
+    }
+
+    //초기화
+    for (int i = 0; i < V; i++)
+    {
+        for (int j = 0; j < V; j++)
+        {
+            if (i == j)
+                adj[i][j] = 0;
+            else
+                adj[i][j] = INF;
+        }
+    }
+
+    for (int i = 0; i < E; i++)
+    {
+        int a, b, c;
+        scanf_s("%d %d %d", &a, &b, &c);
+        adj[a-1][b-1] = c;
+        adj[b-1][a-1] = c;
+    }
+    
+    vector<pair<int, int>> order;
+    for (int i = 0; i < V; i++)
+    {
+        order.push_back(make_pair(delay[i], i));
+    }
+    sort(order.begin(), order.end());
+
+    //정점 안거칠때
+    for (int i = 0; i < V; i++)
+    {
+        for (int j = 0; j < V; j++)
+        {
+            if (i == j)
+                W[i][j] = 0;
+            else
+                W[i][j] = adj[i][j];
+        }
+    }
+
+    //정점 거칠때
+    for (int k = 0; k < V; k++)
+    {
+        int w = order[k].second;
+        for (int i = 0; i < V; i++)
+        {
+            //시간 단축
+            if (adj[i][w] == INF)
+                continue;
+
+            for (int j = 0; j < V; j++)
+            {
+                if (adj[i][j] > adj[i][w] + adj[w][j])
+                {
+                    adj[i][j] = adj[i][w] + adj[w][j];
+                }
+                if (W[i][j] > adj[i][w] + delay[w] + adj[w][j])
+                {
+                    W[i][j] = adj[i][w] + delay[w] + adj[w][j];
+                    via[i][j] = w;
+                }
+            }
+        }
+    }
+
+    printf("%d\n", W[0][4]);
+
+    vector<int> path;
+    reconstruct(0, 4, path);
+    for (int i = 0; i < path.size(); i++)
+    {
+        printf("%d", path[i]);
+    }
+    printf("\n");
+
+    return 0;
+}
