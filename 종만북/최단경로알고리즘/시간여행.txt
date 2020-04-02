@@ -9,22 +9,53 @@ int W;
 
 //가중치, 정점
 vector<vector<pair<int, int>>> adj;
-bool reachable[100][100];
+int reachable[100][100];
 int INF = 123456789;
 vector<int> upper(100, INF);
 
-int main() 
+void floyd()
+{
+    for (int k = 0; k < G;k++)
+    {
+        for (int i = 0; i < G; i++)
+        {
+            for (int j = 0; j < G; j++)
+            {
+                reachable[i][j] = min(reachable[i][j], reachable[i][k] + reachable[k][j]);
+            }
+        }
+    }
+}
+
+int main()
 {
     scanf_s("%d", &G);
     scanf_s("%d", &W);
+    
+    for (int i = 0; i < G; i++)
+    {
+        for (int j = 0; j < G; j++)
+        {
+            if (i == j)
+                reachable[i][j] = 0;
+            else
+                reachable[i][j] = INF;
+        }
+    }
+    adj.resize(G, vector<pair<int, int>>());
 
     for (int i = 0; i < W; i++)
     {
         int a, b, c;
         scanf_s("%d %d %d", &a, &b, &c);
         adj[a].push_back(make_pair(c, b));
+        reachable[a][b] = c;
     }
 
+    //플로이드
+    floyd();
+
+    //최소 버전
     int src = 0;
     int dst = 1;
     upper[src] = 0;
@@ -42,16 +73,28 @@ int main()
             }
         }
     }
-
-    //reachable 업데이트
-    for (int i = 0; i < G; i++)
+    
+    if (reachable[src][dst] == INF)
     {
-        if (upper[i] < INF - 1000000)
+        printf("UNREACHABLE\n");
+        return 0;
+    }
+
+    for (int here = 0; here < G; here++)
+    {
+        for (int i = 0; i < adj[here].size(); i++)
         {
-            reachable[src]
+            int there = adj[here][i].second;
+            int cost = adj[here][i].first;
+            if (upper[there] > upper[here] + cost)
+            {
+                if (reachable[src][here] != INF && reachable[here][dst] != INF)
+                    printf("INFINITY ");
+            }
         }
     }
 
+    printf("%d ", upper[1]);
 
     return 0;
 }
