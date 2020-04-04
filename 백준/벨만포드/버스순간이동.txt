@@ -1,0 +1,88 @@
+#include <queue>
+#include <iostream>
+#include <algorithm>
+#include <string>
+
+using namespace std;
+
+int N;
+int M;
+
+//닿지 않는다 = ( 모든정점 = 플로이드 or 각 정점에 bfs), (한 정점 = INF - A 보다 작으면댐) // target 없으면 그냥 후자, target 있으면 아마 temp -> target 있어야 하므로 플로이드
+//마지막에 업데이트 = 그 정점은 음수사이클에 속함
+//V-1번 완화 하는 이유: 최단 경로가 V개의 정점을 최대로 가진다. 그런데 만약 1번만 완화를 하다 보면 for문의 순서가 있기 때문에 모든 간선으로 부터 완화를 안 받을 수도 있다. 
+//왜냐면 음수가 존재하고 후에 나오는 완화로 해당 정점이 더 낮아져 그 정점과 연결된 다른 정점에도 영향을 끼칠 수 있기 때문이다.
+
+int INF = 1000000007;
+//가중치, 도착점
+vector<vector<pair<int, int>>> adj;
+vector<int> upper;
+
+int main()
+{
+    //입력
+    scanf_s("%d %d", &N, &M);
+    
+    adj.resize(N+1, vector<pair<int, int>>());
+    upper.resize(N+1, INF);
+    upper[1] = 0;
+
+    for (int i = 0; i < M; i++)
+    {
+        int a, b, c;
+        scanf_s("%d %d %d", &a, &b, &c);
+        adj[a].push_back(make_pair(c, b));
+    }
+
+    //N-1까지
+    for (int iter = 0; iter < N - 1; iter++)
+    {
+        for (int here = 1; here < N + 1; here++)
+        {
+            for (int j = 0; j < adj[here].size(); j++)
+            {
+                int there = adj[here][j].second;
+                int cost = adj[here][j].first;
+                upper[there] = min(upper[there], upper[here] + cost);
+            }
+        }
+    }
+
+    //마지막 음수 사이클
+    bool flag = false;
+    for (int here = 1; here < N + 1; here++)
+    {
+        for (int j = 0; j < adj[here].size(); j++)
+        {
+            int there = adj[here][j].second;
+            int cost = adj[here][j].first;
+            
+            if (upper[there] > upper[here] + cost)
+            {
+                if (upper[there] < INF)
+                {
+                    flag = true;
+                    break;
+                }
+            }
+        }
+        if (flag)
+            break;
+    }
+
+    if (flag)
+    {
+        printf("-1\n");
+    }
+    else
+    {
+        for (int i = 2; i < upper.size(); i++)
+        {
+            if (upper[i] < INF)
+                printf("%d\n", upper[i]);
+            else
+                printf("-1\n");
+        }
+    }
+    return 0;
+}
