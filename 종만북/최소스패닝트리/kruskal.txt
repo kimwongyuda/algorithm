@@ -1,0 +1,111 @@
+#include "pch.h"
+#include <iostream>
+#include <vector>
+#include <string>
+#include <algorithm>
+#include <stack>
+#include <queue>
+using namespace std;
+
+struct DisJointSet {
+	vector<int> parent, rank;
+	DisJointSet(int n)
+	{
+		parent.resize(n, 0);
+		rank.resize(n, 1);
+		for (int i = 0; i < n; i++)
+			parent[i] = i;
+	}
+
+	int find(int u)
+	{
+		if (u == parent[u])
+			return u;
+		return parent[u] = find(parent[u]);
+	}
+
+	void merge(int u, int v)
+	{
+		u = find(u);
+		v = find(v);
+
+		if (u == v)
+			return;
+
+		if (rank[u] > rank[v])
+		{
+			int temp = v;
+			v = u;
+			u = temp;
+		}
+
+		parent[u] = v;
+		if (rank[u] == rank[v])
+			rank[v]++;
+	}
+};
+
+int N, M;
+int INF = 987654321;
+
+vector<vector<pair<int, int>>> adj;
+
+//7 9
+//0 1 5
+//0 2 1
+//1 5 3
+//1 3 1
+//1 6 3
+//2 3 4
+//3 4 5
+//3 5 3
+//5 6 2
+
+int main()
+{
+	scanf_s("%d %d", &N, &M);
+	adj.resize(N, vector<pair<int, int>>());
+	for (int i = 0; i < M; i++)
+	{
+		int a, b, c;
+		scanf_s("%d %d %d", &a, &b, &c);
+		adj[a].push_back(make_pair(c, b));
+		adj[b].push_back(make_pair(c, a));
+	}
+
+	//kruskal
+	int answer = 0;
+	vector<pair<int, int>> path;
+
+	vector<pair<int, pair<int, int>>> edges;
+	for (int u = 0; u < N; u++)
+	{
+		for (int v = 0; v < adj[u].size(); v++)
+		{
+			int there = adj[u][v].second;
+			int cost = adj[u][v].first;
+			edges.push_back(make_pair(cost, make_pair(u, there)));
+		}
+	}
+	sort(edges.begin(), edges.end());
+
+	DisJointSet djs(N);
+
+	for (int i = 0; i < edges.size(); i++)
+	{
+		int cost = edges[i].first;
+		int u = edges[i].second.first;
+		int v = edges[i].second.second;
+
+		if (djs.find(u) == djs.find(v))
+			continue;
+
+		djs.merge(u, v);
+		path.push_back(make_pair(u, v));
+		answer += cost;
+	}
+
+	printf("%d\n", answer);
+
+	return 0;
+}
