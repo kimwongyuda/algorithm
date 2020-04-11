@@ -1,0 +1,71 @@
+#include <queue>
+#include <iostream>
+#include <algorithm>
+#include <string>
+
+using namespace std;
+
+int N, M;
+int adj[200][200];
+int INF = 987654321;
+vector<int> amatch, bmatch;
+vector<bool> visited;
+
+bool dfs(int a)
+{
+    if (visited[a])
+        return false;
+    visited[a] = true;
+
+    for (int i = 0; i < M; i++)
+    {
+        if (adj[a][i])
+        {
+            if (bmatch[i] == -1 || dfs(bmatch[i]))
+            {
+                amatch[a] = i;
+                bmatch[i] = a;
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
+int solve()
+{
+    amatch = vector<int>(N, -1);
+    bmatch = vector<int>(M, -1);
+    int match_count = 0;
+    for (int i = 0; i < N; i++)
+    {
+        visited = vector<bool>(N, false);
+        if (dfs(i))
+            match_count++;
+
+    }
+    return match_count;
+}
+
+int main()
+{
+    //입력 및 초기화
+    scanf_s("%d %d", &N, &M);
+
+    for (int i = 0; i < N; i++)
+    {
+        int num = 0;
+        scanf_s("%d", &num);
+        for (int j = 0; j < num; j++)
+        {
+            int temp = 0;
+            scanf_s("%d", &temp);
+            adj[i][temp - 1] = 1;
+        }
+    }
+    
+    
+    printf("%d\n", solve());
+
+    return 0;
+}

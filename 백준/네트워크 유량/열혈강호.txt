@@ -1,0 +1,88 @@
+#include <queue>
+#include <iostream>
+#include <algorithm>
+#include <string>
+
+using namespace std;
+
+int N, M;
+int INF = 987654321;
+int capacity[1003][1003];
+int flow[1003][1003];
+
+int nf(int src, int sink)
+{
+    int tf = 0;
+    int V = 2 + N + M;
+
+    while (true)
+    {
+        vector<int> parent(V, -1);
+        queue<int> q;
+        parent[src] = 0;
+        q.push(src);
+
+        while (!q.empty() && parent[sink] == -1)
+        {
+            int here = q.front();
+            q.pop();
+
+            for (int i = 0; i < V; i++)
+            {
+                if (capacity[here][i] - flow[here][i] > 0 && parent[i] == -1)
+                {
+                    parent[i] = here;
+                    q.push(i);
+                }
+            }
+        }
+
+        if (parent[sink] == -1)
+            break;
+
+        int amount = INF;
+
+        for (int i = sink; i != src; i = parent[i])
+        {
+            amount = min(amount, capacity[parent[i]][i] - flow[parent[i]][i]);
+        }
+        for (int i = sink; i != src; i = parent[i])
+        {
+            flow[parent[i]][i] += amount;
+            flow[i][parent[i]] -= amount;
+        }
+
+        tf += amount;
+    }
+
+    return tf;
+}
+
+int main()
+{
+    //입력 및 초기화
+    scanf_s("%d %d", &N, &M);
+
+    for (int i = 0; i < N; i++)
+    {
+        capacity[0][2 + i] = 1;
+        capacity[2 + N + i][1] = 1;
+    }
+
+    for (int i = 0; i < N; i++)
+    {
+        int num = 0;
+        scanf_s("%d", &num);
+        for (int j = 0; j < num; j++)
+        {
+            int temp = 0;
+            scanf_s("%d", &temp);
+            capacity[2 + i][2 + N + temp - 1] = 1;
+        }
+    }
+    
+    
+    printf("%d\n", nf(0, 1));
+
+    return 0;
+}
